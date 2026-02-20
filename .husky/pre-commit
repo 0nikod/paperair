@@ -1,0 +1,5 @@
+echo "Running Astro check..."
+pnpm astro check
+
+echo "Running Biome fix..."
+pnpm lint-staged
