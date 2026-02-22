@@ -1,95 +1,125 @@
 ---
-// src/components/Navbar.astro
+import { NAV_LINKS, SITE_TITLE } from "@consts";
+import { Icon } from "astro-icon/components";
+
+const pathname = Astro.url.pathname;
+const currentPath =
+  pathname.length > 1 && pathname.endsWith("/")
+    ? pathname.slice(0, -1)
+    : pathname;
+
+const isActive = (href: string) => {
+  const target =
+    href.length > 1 && href.endsWith("/") ? href.slice(0, -1) : href;
+  if (target === "/") return currentPath === "/";
+  return currentPath.startsWith(target);
+};
 ---
 
 <header
-  class="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-11/12 max-w-5xl rounded-full backdrop-blur lg:backdrop-blur-md bg-base-100/80 shadow-sm border border-base-200"
+  class="sticky top-0 z-50 w-full bg-base-100 shadow-sm transition-all duration-300"
 >
-  <nav class="navbar px-4 min-h-14">
-    <div class="navbar-start">
-      <div class="dropdown">
+  <nav
+    class="navbar container mx-auto px-4 lg:px-8 max-w-7xl h-16 min-h-16"
+    aria-label="主导航"
+  >
+    {/* Left: Logo & Title */}
+    <div class="flex-1">
+      <a
+        href="/"
+        class="flex items-center gap-2 hover:opacity-80 transition-opacity focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary rounded-lg p-1"
+        aria-label="返回首页"
+      >
+        <span
+          class="text-lg font-bold bg-clip-text text-transparent bg-linear-to-r from-primary to-secondary hidden sm:inline-block"
+        >
+          {SITE_TITLE}
+        </span>
+      </a>
+    </div>
+
+    {/* Right: Links & Search */}
+    <div class="flex-none flex items-center gap-2 sm:gap-6">
+      {/* Desktop Links */}
+      <ul class="items-center gap-6 hidden md:flex">
+        {
+          NAV_LINKS.map((link) => {
+            const active = isActive(link.href);
+            return (
+              <li class="h-16 flex items-center">
+                <a
+                  href={link.href}
+                  class={`relative text-[15px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary rounded-sm h-full flex items-center
+                        ${
+                          active
+                            ? "text-primary"
+                            : "text-base-content/70 hover:text-primary"
+                        }`}
+                  aria-current={active ? "page" : undefined}
+                >
+                  {link.text}
+                  {active && (
+                    <span class="absolute bottom-2 left-0 w-full h-[3px] bg-primary rounded-t-lg shadow-[0_-2px_8px_rgba(var(--color-primary),0.5)]" />
+                  )}
+                </a>
+              </li>
+            );
+          })
+        }
+      </ul>
+
+      {/* Search Bar */}
+      <div class="form-control">
+        <label class="relative flex items-center">
+          <span class="sr-only">搜索</span>
+          <Icon
+            name="ri:search-line"
+            class="absolute left-3 w-4 h-4 text-base-content/40"
+          />
+          <input
+            type="search"
+            placeholder="搜索..."
+            class="input input-sm h-9 bg-base-200/80 border-transparent hover:bg-base-200 rounded-full pl-9 w-32 sm:w-48 lg:w-56 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary focus:bg-base-100 transition-all text-sm shadow-inner"
+          />
+        </label>
+      </div>
+
+      {/* Mobile Menu Dropdown */}
+      <div class="dropdown dropdown-end md:hidden">
         <div
           tabindex="0"
           role="button"
-          class="btn btn-ghost lg:hidden"
-          aria-label="Menu"
+          class="btn btn-ghost btn-circle btn-sm h-9 w-9"
+          aria-label="打开菜单"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            ><path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M4 6h16M4 12h8m-8 6h16"></path>
-          </svg>
+          <Icon name="ri:menu-line" class="h-5 w-5" />
         </div>
         <ul
           tabindex="0"
-          class="menu menu-sm dropdown-content mt-4 z-1 p-2 shadow-lg bg-base-100 rounded-box w-52 border border-base-200"
+          class="menu menu-sm dropdown-content mt-4 z-1 p-3 shadow-lg bg-base-100 rounded-box w-52 border border-base-200 gap-1"
         >
-          <li><a href="/">Home</a></li>
-          <li><a href="/blog">Blog</a></li>
-          <li><a href="/moments">Moments</a></li>
-          <li><a href="/about">About</a></li>
+          {
+            NAV_LINKS.map((link) => {
+              const active = isActive(link.href);
+              return (
+                <li>
+                  <a
+                    href={link.href}
+                    class={`text-[15px] font-medium py-2 ${
+                      active
+                        ? "active bg-primary/10 text-primary"
+                        : "text-base-content/80"
+                    }`}
+                    aria-current={active ? "page" : undefined}
+                  >
+                    {link.text}
+                  </a>
+                </li>
+              );
+            })
+          }
         </ul>
       </div>
-      <a href="/" class="btn btn-ghost text-xl font-bold tracking-tight"
-        >PaperAir</a
-      >
-    </div>
-
-    <div class="navbar-center hidden lg:flex">
-      <ul class="menu menu-horizontal px-1 font-medium text-base gap-1">
-        <li><a href="/" class="rounded-full px-4">Home</a></li>
-        <li><a href="/blog" class="rounded-full px-4">Blog</a></li>
-        <li><a href="/moments" class="rounded-full px-4">Moments</a></li>
-        <li><a href="/about" class="rounded-full px-4">About</a></li>
-      </ul>
-    </div>
-
-    <div class="navbar-end gap-2">
-      <button
-        class="btn btn-ghost btn-circle btn-sm md:btn-md"
-        aria-label="Search"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-5 w-5"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          ><path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-        </svg>
-      </button>
-
-      <!-- Theme toggle will be extracted to ThemeToggle.astro later -->
-      <button
-        class="btn btn-ghost btn-circle btn-sm md:btn-md"
-        aria-label="Theme Toggle"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="w-5 h-5"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
-          ></path>
-        </svg>
-      </button>
     </div>
   </nav>
 </header>
