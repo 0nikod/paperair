@@ -7,7 +7,7 @@ import { Icon } from "astro-icon/components";
   aria-label="切换主题"
 >
   <!-- this hidden checkbox controls the state -->
-  <input type="checkbox" class="theme-controller" value="emerald" />
+  <input type="checkbox" class="theme-controller" value="paperair" />
 
   <!-- sun icon for light mode (checked state) -->
   <Icon name="ri:sun-line" class="swap-on h-5 w-5" />
@@ -23,24 +23,24 @@ import { Icon } from "astro-icon/components";
       return localStorage.getItem("theme");
     }
     if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-      return "dracula";
+      return "paperair-dark";
     }
-    return "emerald";
+    return "paperair";
   };
 
   const theme = getTheme();
   const themeControllers = document.querySelectorAll(".theme-controller");
 
   // Initialize state
-  if (theme === "dracula") {
-    document.documentElement.setAttribute("data-theme", "dracula");
+  if (theme === "paperair-dark") {
+    document.documentElement.setAttribute("data-theme", "paperair-dark");
     themeControllers.forEach((el) => {
-      if (el instanceof HTMLInputElement) el.checked = false; // dracula is dark (unchecked moon)
+      if (el instanceof HTMLInputElement) el.checked = false; // paperair-dark is dark (unchecked moon)
     });
   } else {
-    document.documentElement.setAttribute("data-theme", "emerald");
+    document.documentElement.setAttribute("data-theme", "paperair");
     themeControllers.forEach((el) => {
-      if (el instanceof HTMLInputElement) el.checked = true; // emerald is light (checked sun)
+      if (el instanceof HTMLInputElement) el.checked = true; // paperair is light (checked sun)
     });
   }
 
@@ -48,7 +48,7 @@ import { Icon } from "astro-icon/components";
   themeControllers.forEach((el) => {
     el.addEventListener("change", (e) => {
       const isLight = e.target.checked;
-      const newTheme = isLight ? "emerald" : "dracula";
+      const newTheme = isLight ? "paperair" : "paperair-dark";
 
       document.documentElement.setAttribute("data-theme", newTheme);
       localStorage.setItem("theme", newTheme);

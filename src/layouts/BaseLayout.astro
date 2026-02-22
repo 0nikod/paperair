@@ -18,8 +18,8 @@ const { title = "PaperAir", description = "A simple blog" } = Astro.props;
 			const localTheme = localStorage?.getItem("theme");
 			const mediaTheme = window.matchMedia("(prefers-color-scheme: dark)")
 				.matches
-				? "dracula"
-				: "emerald";
+				? "paperair-dark"
+				: "paperair";
 			const theme = localTheme || mediaTheme;
 			document.documentElement.setAttribute("data-theme", theme);
 		</script>
