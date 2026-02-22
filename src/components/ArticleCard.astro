@@ -75,7 +75,7 @@ const isCard = layout === "card";
           </time>
           {tags && tags.length > 0 && (
             <div class="flex gap-2">
-              {tags.map((tag) => (
+              {tags.map((tag: string) => (
                 <span class="badge badge-accent badge-outline badge-xs opacity-70">
                   {tag}
                 </span>

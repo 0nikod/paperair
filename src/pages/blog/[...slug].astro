@@ -91,7 +91,7 @@ const { Content } = await render(post);
         {
           post.data.tags && post.data.tags.length > 0 && (
             <div class="mt-6 flex gap-2 flex-wrap justify-center">
-              {post.data.tags.map((tag) => (
+              {post.data.tags.map((tag: string) => (
                 <span class="badge badge-neutral badge-lg">{tag}</span>
               ))}
             </div>
