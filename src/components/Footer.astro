@@ -1,25 +1,33 @@
 ---
 import { Icon } from "astro-icon/components";
+import { footerConfig } from "../settings/footer";
 
 const today = new Date();
 ---
 
-<!-- TODO: 从配置文件读取 -->
 <footer class="footer footer-center bg-base-100 text-base-content p-10 rounded">
   <aside>
-    <p>Copyright © {today.getFullYear()} - All right reserved by PaperAir</p>
+    <p>
+      Copyright © {today.getFullYear()} - All right reserved by {
+        footerConfig.author
+      }
+    </p>
   </aside>
   <nav>
     <div class="grid grid-flow-col gap-4">
-      <a aria-label="Github Profile" class="btn btn-ghost btn-circle btn-sm">
-        <Icon name="ri:github-fill" class="w-6 h-6" />
-      </a>
-      <a
-        aria-label="X (Twitter) Profile"
-        class="btn btn-ghost btn-circle btn-sm"
-      >
-        <Icon name="ri:twitter-x-fill" class="w-6 h-6" />
-      </a>
+      {
+        footerConfig.socialLinks.map((link) => (
+          <a
+            aria-label={link.ariaLabel}
+            href={link.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn btn-ghost btn-circle btn-sm"
+          >
+            <Icon name={link.icon} class="w-6 h-6" />
+          </a>
+        ))
+      }
     </div>
   </nav>
 </footer>
