@@ -22,3 +22,11 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+.agents/
+
+# Gemini
+.gemini/
+
+# Claude
+.claude/
