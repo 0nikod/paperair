@@ -1,6 +1,8 @@
 ---
+import NavLinks from "@components/NavLinks.astro";
+import SearchBar from "@components/SearchBar.astro";
 import ThemeToggle from "@components/ThemeToggle.astro";
-import { NAV_LINKS, SITE_TITLE } from "@consts";
+import { SITE_TITLE } from "@consts";
 import { Icon } from "astro-icon/components";
 
 const pathname = Astro.url.pathname;
@@ -8,13 +10,6 @@ const currentPath =
   pathname.length > 1 && pathname.endsWith("/")
     ? pathname.slice(0, -1)
     : pathname;
-
-const isActive = (href: string) => {
-  const target =
-    href.length > 1 && href.endsWith("/") ? href.slice(0, -1) : href;
-  if (target === "/") return currentPath === "/";
-  return currentPath.startsWith(target);
-};
 ---
 
 <header
@@ -43,47 +38,11 @@ const isActive = (href: string) => {
     <div class="flex-none flex items-center gap-2 sm:gap-6">
       {/* Desktop Links */}
       <ul class="items-center gap-6 hidden md:flex">
-        {
-          NAV_LINKS.map((link) => {
-            const active = isActive(link.href);
-            return (
-              <li class="h-16 flex items-center">
-                <a
-                  href={link.href}
-                  class={`relative text-[15px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary rounded-sm h-full flex items-center
-                        ${
-                          active
-                            ? "text-primary"
-                            : "text-base-content/70 hover:text-primary"
-                        }`}
-                  aria-current={active ? "page" : undefined}
-                >
-                  {link.text}
-                  {active && (
-                    <span class="absolute bottom-2 left-0 w-full h-[3px] bg-primary rounded-t-lg shadow-[0_-2px_8px_rgba(var(--color-primary),0.5)]" />
-                  )}
-                </a>
-              </li>
-            );
-          })
-        }
+        <NavLinks currentPath={currentPath} />
       </ul>
 
       {/* Search Bar */}
-      <div class="form-control hidden sm:block">
-        <label class="relative flex items-center">
-          <span class="sr-only">搜索</span>
-          <Icon
-            name="ri:search-line"
-            class="absolute left-3 w-4 h-4 text-base-content/40"
-          />
-          <input
-            type="search"
-            placeholder="搜索..."
-            class="input input-sm h-9 bg-base-200/80 border-transparent hover:bg-base-200 rounded-full pl-9 w-32 sm:w-48 lg:w-56 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary focus:bg-base-100 transition-all text-sm shadow-inner"
-          />
-        </label>
-      </div>
+      <SearchBar class="hidden sm:block" />
 
       <ThemeToggle />
 
@@ -101,26 +60,7 @@ const isActive = (href: string) => {
           tabindex="0"
           class="menu menu-sm dropdown-content mt-4 z-1 p-3 shadow-lg bg-base-100 rounded-box w-52 border border-base-200 gap-1"
         >
-          {
-            NAV_LINKS.map((link) => {
-              const active = isActive(link.href);
-              return (
-                <li>
-                  <a
-                    href={link.href}
-                    class={`text-[15px] font-medium py-2 ${
-                      active
-                        ? "active bg-primary/10 text-primary"
-                        : "text-base-content/80"
-                    }`}
-                    aria-current={active ? "page" : undefined}
-                  >
-                    {link.text}
-                  </a>
-                </li>
-              );
-            })
-          }
+          <NavLinks currentPath={currentPath} isMobile={true} />
         </ul>
       </div>
     </div>
