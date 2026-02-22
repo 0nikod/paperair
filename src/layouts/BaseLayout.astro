@@ -1,5 +1,7 @@
 ---
 import "@styles/global.css";
+import Footer from "@components/Footer.astro";
+import Navbar from "@components/Navbar.astro";
 
 interface Props {
   title?: string;
@@ -9,7 +11,7 @@ interface Props {
 const { title = "PaperAir", description = "A simple blog" } = Astro.props;
 ---
 
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN" data-theme="steamyflame">
 	<head>
 		<meta charset="UTF-8" />
@@ -19,15 +21,15 @@ const { title = "PaperAir", description = "A simple blog" } = Astro.props;
 		<title>{title}</title>
 		<meta name="description" content={description} />
 	</head>
-	<body>
-		<!-- Navbar 组件插槽 -->
-		<!-- <Navbar /> -->
-		
-		<main>
+	<body
+		class="min-h-screen flex flex-col font-sans antialiased text-base-content selection:bg-primary/30 pt-20"
+	>
+		<Navbar />
+
+		<main class="grow w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
 			<slot />
 		</main>
 
-		<!-- Footer 组件插槽 -->
-		<!-- <Footer /> -->
+		<Footer />
 	</body>
 </html>
