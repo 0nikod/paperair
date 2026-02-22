@@ -12,8 +12,17 @@ const { title = "PaperAir", description = "A simple blog" } = Astro.props;
 ---
 
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="steamyflame">
+<html lang="zh-CN">
 	<head>
+		<script is:inline>
+			const localTheme = localStorage?.getItem("theme");
+			const mediaTheme = window.matchMedia("(prefers-color-scheme: dark)")
+				.matches
+				? "dracula"
+				: "emerald";
+			const theme = localTheme || mediaTheme;
+			document.documentElement.setAttribute("data-theme", theme);
+		</script>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
