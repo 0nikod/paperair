@@ -1,0 +1,40 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { Icon } from "astro-icon/components";
+
+interface Props {
+  moment: CollectionEntry<"moments">;
+  class?: string;
+}
+
+const { moment, class: className } = Astro.props;
+---
+
+<div
+  class:list={[
+    "card bg-base-100 border border-base-200 hover:shadow-md transition-shadow",
+    className,
+  ]}
+>
+  <div class="card-body p-6">
+    <div class="text-sm text-base-content/80 line-clamp-4">
+      {moment.body}
+    </div>
+    <div
+      class="mt-4 text-xs text-base-content/40 flex justify-end items-center gap-1"
+    >
+      <Icon name="ri:time-line" class="w-3.5 h-3.5" />
+      <time datetime={moment.data.pubDate.toISOString()}>
+        {
+          moment.data.pubDate.toLocaleDateString("zh-CN", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+          })
+        }
+      </time>
+    </div>
+  </div>
+</div>

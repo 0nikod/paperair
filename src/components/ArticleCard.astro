@@ -1,12 +1,14 @@
 ---
 import type { CollectionEntry } from "astro:content";
+import { Icon } from "astro-icon/components";
 
 interface Props {
   post: CollectionEntry<"blog">;
   layout?: "card" | "list";
+  class?: string;
 }
 
-const { post, layout = "card" } = Astro.props;
+const { post, layout = "card", class: className } = Astro.props;
 const { title, description, pubDate, tags } = post.data;
 
 const formattedDate = pubDate.toLocaleDateString("zh-CN", {
@@ -22,7 +24,10 @@ const isCard = layout === "card";
   isCard ? (
     <a
       href={`/blog/${post.id}`}
-      class="card bg-base-100 border border-base-200 hover:shadow-xl hover:border-primary/30 transition-all duration-300 group h-full"
+      class:list={[
+        "card bg-base-100 border border-base-200 hover:shadow-xl hover:border-primary/30 transition-all duration-300 group h-full",
+        className,
+      ]}
     >
       <div class="card-body p-6">
         <h3 class="card-title text-lg group-hover:text-primary transition-colors line-clamp-2">
@@ -49,28 +54,19 @@ const isCard = layout === "card";
       </div>
     </a>
   ) : (
-    <article class="list-row items-center border-b border-base-200 py-6 last:border-0 group">
+    <article
+      class:list={[
+        "list-row items-center border-b border-base-200 py-6 last:border-0 group",
+        className,
+      ]}
+    >
       <div class="flex-1 min-w-0">
         <div class="flex items-center gap-x-4 gap-y-2 flex-wrap mb-2">
           <time
             datetime={pubDate.toISOString()}
             class="text-sm text-base-content/50 flex items-center gap-1"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="w-3.5 h-3.5"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-              <line x1="16" y1="2" x2="16" y2="6" />
-              <line x1="8" y1="2" x2="8" y2="6" />
-              <line x1="3" y1="10" x2="21" y2="10" />
-            </svg>
+            <Icon name="ri:calendar-line" class="w-3.5 h-3.5" />
             {formattedDate}
           </time>
           {tags && tags.length > 0 && (
@@ -106,20 +102,7 @@ const isCard = layout === "card";
           class="btn btn-circle btn-ghost btn-sm text-base-content/20 group-hover:text-primary group-hover:bg-primary/10 transition-all duration-300"
           aria-label="阅读全文"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <path d="m11 17 5-5-5-5" />
-            <path d="M18 17l5-5-5-5" />
-          </svg>
+          <Icon name="ri:arrow-right-line" class="w-5 h-5" />
         </a>
       </div>
     </article>

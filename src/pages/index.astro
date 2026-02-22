@@ -2,6 +2,7 @@
 import { getCollection } from "astro:content";
 import ArticleCard from "@components/ArticleCard.astro";
 import HeroLines from "@components/HeroLines.astro";
+import MomentCard from "@components/MomentCard.astro";
 import BaseLayout from "@layouts/BaseLayout.astro";
 
 // 尝试获取全量内容，按时间降序排列并截取前三篇
@@ -23,11 +24,15 @@ const allMoments = await getCollection("moments")
   .catch(() => []);
 ---
 
-<BaseLayout title="首页 - PaperAir" description="分享技术、生活与思考的个人空间">
+<BaseLayout
+  title="首页 - PaperAir"
+  description="分享技术、生活与思考的个人空间"
+>
   <div class="space-y-16 py-8">
     <!-- 英雄区域 -->
-    <section class="relative w-screen max-w-[100vw] left-1/2 -translate-x-1/2 min-h-[460px] md:min-h-[560px] flex flex-col items-center justify-center overflow-hidden mb-12 isolate -mt-8 pt-8 group">
-      
+    <section
+      class="relative w-screen max-w-[100vw] left-1/2 -translate-x-1/2 min-h-[460px] md:min-h-[560px] flex flex-col items-center justify-center overflow-hidden mb-12 isolate -mt-8 pt-8 group"
+    >
       <!-- 装饰性斜线组, 加入 mask-image 使得中间文字部分线条隐藏并实现柔和边缘扩散 -->
       <HeroLines />
 
@@ -36,7 +41,7 @@ const allMoments = await getCollection("moments")
         class="text-4xl md:text-6xl font-extrabold bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent"
       >
         Welcome to PaperAir
-        </h1>
+      </h1>
       <div class="flex justify-center gap-4 pt-4">
         <a href="/blog" class="btn btn-primary rounded-full px-8">阅读文章</a>
         <a href="/about" class="btn btn-ghost rounded-full px-8">关于我</a>
@@ -55,8 +60,16 @@ const allMoments = await getCollection("moments")
       {
         allBlogPosts.length > 0 ? (
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {allBlogPosts.map((post) => (
-              <ArticleCard post={post} layout="card" />
+            {allBlogPosts.map((post, index) => (
+              <ArticleCard
+                post={post}
+                layout="card"
+                class={
+                  allBlogPosts.length === 3 && index === 2
+                    ? "md:col-span-2 lg:col-span-1"
+                    : ""
+                }
+              />
             ))}
           </div>
         ) : (
@@ -77,29 +90,17 @@ const allMoments = await getCollection("moments")
       </div>
 
       {
-        // TODO: 使用原子化组件重构
         allMoments.length > 0 ? (
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {allMoments.map((moment) => (
-              <div class="card bg-base-100 border border-base-200 hover:shadow-md transition-shadow">
-                <div class="card-body p-6">
-                  <!-- 由于动态正文是通过 body 提供，这里如果 body 较长可能需要截断。由于目前没有解析为 HTML，所以直接以纯文本展示部分或者依靠 prose。我们这里简单截断展示。 -->
-                  <div class="text-sm text-base-content/80 line-clamp-4">
-                    {moment.body}
-                  </div>
-                  <div class="mt-4 text-xs text-base-content/40 flex justify-end">
-                    <time datetime={moment.data.pubDate.toISOString()}>
-                      {moment.data.pubDate.toLocaleDateString("zh-CN", {
-                        year: "numeric",
-                        month: "short",
-                        day: "numeric",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </time>
-                  </div>
-                </div>
-              </div>
+            {allMoments.map((moment, index) => (
+              <MomentCard
+                moment={moment}
+                class={
+                  allMoments.length === 3 && index === 2
+                    ? "md:col-span-2 lg:col-span-1"
+                    : ""
+                }
+              />
             ))}
           </div>
         ) : (
