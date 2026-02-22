@@ -38,3 +38,38 @@
   --depth: 1;
   --noise: 0;
 }
+
+@plugin "daisyui/theme" {
+  name: "paperair-dark";
+  default: false;
+  prefersdark: true;
+  color-scheme: "dark";
+  --color-base-100: oklch(15% 0.01 260);
+  --color-base-200: oklch(20% 0.01 260);
+  --color-base-300: oklch(25% 0.01 260);
+  --color-base-content: oklch(90% 0.01 260);
+  --color-primary: oklch(60% 0.015 260);
+  --color-primary-content: oklch(15% 0.01 260);
+  --color-secondary: oklch(40% 0.015 260);
+  --color-secondary-content: oklch(90% 0.01 260);
+  --color-accent: oklch(80% 0.015 260);
+  --color-accent-content: oklch(20% 0.01 260);
+  --color-neutral: oklch(80% 0.01 260);
+  --color-neutral-content: oklch(15% 0.01 260);
+  --color-info: oklch(45% 0.06 240);
+  --color-info-content: oklch(95% 0.03 240);
+  --color-success: oklch(42% 0.06 170);
+  --color-success-content: oklch(95% 0.03 170);
+  --color-warning: oklch(48% 0.06 80);
+  --color-warning-content: oklch(15% 0.03 80);
+  --color-error: oklch(45% 0.1 20);
+  --color-error-content: oklch(95% 0.04 20);
+  --radius-selector: 0.5rem;
+  --radius-field: 0rem;
+  --radius-box: 0rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 1;
+  --noise: 0;
+}
