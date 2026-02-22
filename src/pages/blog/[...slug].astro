@@ -1,0 +1,78 @@
+---
+import { getCollection, render } from "astro:content";
+import BaseLayout from "@layouts/BaseLayout.astro";
+
+export async function getStaticPaths() {
+  const blogEntries = await getCollection("blog");
+  return blogEntries
+    .filter((post) => !post.data.draft)
+    .map((post) => ({
+      params: { slug: post.id },
+      props: { post },
+    }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+---
+
+<BaseLayout
+  title={`${post.data.title} - PaperAir`}
+  description={post.data.description || post.data.title}
+>
+  <article class="max-w-4xl mx-auto py-10 px-4 sm:px-6">
+    <header class="mb-10 text-center space-y-4">
+      <h1 class="text-3xl md:text-5xl font-extrabold leading-tight">
+        {post.data.title}
+      </h1>
+      <div
+        class="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-sm text-base-content/60"
+      >
+        <time datetime={post.data.pubDate.toISOString()}>
+          发布于：{
+            post.data.pubDate.toLocaleDateString("zh-CN", {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })
+          }
+        </time>
+        {
+          post.data.updatedDate && (
+            <time datetime={post.data.updatedDate.toISOString()}>
+              更新于：
+              {post.data.updatedDate.toLocaleDateString("zh-CN", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+            </time>
+          )
+        }
+      </div>
+      {
+        post.data.tags && post.data.tags.length > 0 && (
+          <div class="flex flex-wrap justify-center gap-2 pt-2">
+            {post.data.tags.map((tag: string) => (
+              <span class="badge badge-secondary badge-outline">{tag}</span>
+            ))}
+          </div>
+        )
+      }
+    </header>
+
+    <div class="divider mb-10"></div>
+
+    <div
+      class="prose prose-base sm:prose-lg md:prose-xl mx-auto max-w-none prose-img:rounded-xl prose-img:shadow-lg prose-a:text-primary hover:prose-a:text-primary/80 transition-colors"
+    >
+      <Content />
+    </div>
+
+    <div class="mt-16 text-center border-t border-base-200/50 pt-8">
+      <a href="/blog" class="btn btn-ghost hover:bg-base-200 rounded-full px-8">
+        &larr; 返回博客列表
+      </a>
+    </div>
+  </article>
+</BaseLayout>
