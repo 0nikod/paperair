@@ -9,7 +9,7 @@ interface Props {
 }
 
 const { post, layout = "card", class: className } = Astro.props;
-const { title, description, pubDate, tags } = post.data;
+const { title, description, pubDate } = post.data;
 
 // 计算字数和阅读时间 (简单估算)
 const wordCount = post.body ? post.body.length : 0;
@@ -44,16 +44,6 @@ const isCard = layout === "card";
         )}
 
         <div class="mt-auto pt-6">
-          {tags && tags.length > 0 && (
-            <div class="flex flex-wrap gap-1.5 mb-3">
-              {tags.map((tag: string) => (
-                <span class="badge badge-secondary badge-outline badge-xs px-1.5 py-2">
-                  {tag}
-                </span>
-              ))}
-            </div>
-          )}
-
           <div class="flex items-center text-xs text-base-content/50 gap-3">
             <time datetime={pubDate.toISOString()}>{formattedDate}</time>
             <span class="flex items-center gap-1">
@@ -94,16 +84,6 @@ const isCard = layout === "card";
               {wordCount} 字
             </span>
           </div>
-
-          {tags && tags.length > 0 && (
-            <div class="flex gap-2 flex-wrap">
-              {tags.map((tag: string) => (
-                <span class="badge badge-accent badge-outline badge-xs opacity-70">
-                  {tag}
-                </span>
-              ))}
-            </div>
-          )}
         </div>
 
         <h2 class="text-xl sm:text-2xl font-bold mb-2">
