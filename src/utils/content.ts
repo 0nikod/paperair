@@ -7,7 +7,9 @@ import { getCollection } from "astro:content";
 export async function getPublishedPosts(limit?: number) {
   const posts = await getCollection("blog");
   const filtered = posts
-    .filter((post) => !post.data.draft) // 过滤草稿
+    .filter(
+      (post) => !post.data.draft && (import.meta.env.DEV || !post.data.test),
+    ) // 过滤草稿和生产环境下的测试文章
     .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 
   return limit ? filtered.slice(0, limit) : filtered;
