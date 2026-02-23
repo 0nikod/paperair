@@ -14,20 +14,24 @@ import { Icon } from "astro-icon/components";
   <Icon name="ri:moon-line" class="swap-off h-5 w-5" />
 </button>
 
+<script is:inline>
+  // This runs synchronously and avoids button flashing on page load
+  const toggleBtn = document.getElementById("theme-toggle");
+  if (toggleBtn) {
+    const currentTheme = document.documentElement.getAttribute("data-theme");
+    if (currentTheme === "paperair") {
+      toggleBtn.classList.add("swap-active");
+    } else {
+      toggleBtn.classList.remove("swap-active");
+    }
+  }
+</script>
+
 <script>
   // This script runs securely after the DOM has loaded
   const toggle = document.getElementById("theme-toggle");
 
   if (toggle) {
-    // 1. Initialize button state based on the current theme (which was set by BaseLayout.astro in <head>)
-    const currentTheme = document.documentElement.getAttribute("data-theme");
-    // "paperair" is light (swap-active for sun), "paperair-dark" is dark
-    if (currentTheme === "paperair") {
-      toggle.classList.add("swap-active");
-    } else {
-      toggle.classList.remove("swap-active");
-    }
-
     // 2. Handle button clicks
     toggle.addEventListener("click", () => {
       // Toggle the swap animation class
