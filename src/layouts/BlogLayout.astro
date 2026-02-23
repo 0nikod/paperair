@@ -5,6 +5,7 @@ import TableOfContents from "@components/TableOfContents.astro";
 import BaseLayout from "@layouts/BaseLayout.astro";
 
 import type { MarkdownHeading } from "astro";
+import { TIMEZONE } from "@/settings/consts";
 
 interface Props {
   post: CollectionEntry<"blog">;
@@ -19,14 +20,14 @@ const formattedPubDate = pubDate.toLocaleDateString("zh-CN", {
   year: "numeric",
   month: "long",
   day: "numeric",
-  timeZone: "Asia/Shanghai",
+  timeZone: TIMEZONE,
 });
 
 const formattedUpdatedDate = updatedDate?.toLocaleDateString("zh-CN", {
   year: "numeric",
   month: "long",
   day: "numeric",
-  timeZone: "Asia/Shanghai",
+  timeZone: TIMEZONE,
 });
 
 // 处理 TOC 层级关系

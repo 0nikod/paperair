@@ -6,3 +6,5 @@ export const NAV_LINKS = [
   { href: "/blog", text: "博客" },
   { href: "/moments", text: "动态" },
 ];
+
+export const TIMEZONE = "Asia/Shanghai";
