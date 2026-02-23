@@ -73,8 +73,12 @@ const momentsWithYear = sortedMoments.map((moment, index) => {
       </div>
     ) : (
       <div class="flex flex-col gap-8 w-full">
-        {momentsWithYear.map((moment) => (
-          <MomentTimelineItem moment={moment} showYear={moment.showYear} />
+        {momentsWithYear.map((moment, index) => (
+          <MomentTimelineItem
+            moment={moment}
+            showYear={moment.showYear}
+            isLast={index === momentsWithYear.length - 1}
+          />
         ))}
       </div>
     )

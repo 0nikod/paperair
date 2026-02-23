@@ -1,7 +1,7 @@
 ---
 import ArticleCard from "@components/ArticleCard.astro";
 import HeroLines from "@components/HeroLines.astro";
-import MomentCard from "@components/MomentCard.astro";
+import MomentTimelineItem from "@components/MomentTimelineItem.astro";
 import BaseLayout from "@layouts/BaseLayout.astro";
 import { getPublishedMoments, getPublishedPosts } from "@utils/content";
 
@@ -79,17 +79,20 @@ const allMoments = await getPublishedMoments(3).catch(() => []);
 
       {
         allMoments.length > 0 ? (
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {allMoments.map((moment, index) => (
-              <MomentCard
-                moment={moment}
-                class={
-                  allMoments.length === 3 && index === 2
-                    ? "md:col-span-2 lg:col-span-1"
-                    : ""
-                }
-              />
-            ))}
+          <div class="flex flex-col gap-8 w-full">
+            {allMoments.map((moment, index) => {
+              const momentYear = moment.data.pubDate.getFullYear().toString();
+              const prevYear = allMoments[index - 1]?.data.pubDate
+                ?.getFullYear()
+                .toString();
+              return (
+                <MomentTimelineItem
+                  moment={moment}
+                  showYear={momentYear !== prevYear}
+                  isLast={index === allMoments.length - 1}
+                />
+              );
+            })}
           </div>
         ) : (
           <div class="text-center py-12 bg-base-200/30 rounded-box border border-base-200 border-dashed">

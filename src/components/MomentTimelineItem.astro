@@ -8,9 +8,15 @@ interface Props {
   moment: CollectionEntry<"moments">;
   class?: string;
   showYear?: boolean; // Whether to emphasize the year in the date display
+  isLast?: boolean;
 }
 
-const { moment, class: className, showYear = false } = Astro.props;
+const {
+  moment,
+  class: className,
+  showYear = false,
+  isLast = false,
+} = Astro.props;
 const { Content } = await render(moment);
 
 const date = moment.data.pubDate;
@@ -31,10 +37,11 @@ const momentUrl = `/moments/${year}/${month}/${day}/${moment.id.replace(
 
 <div class:list={["flex gap-4 w-full relative group", className]}>
   {/* Timeline vertical line */}
-  <div
-    class="absolute left-10 md:left-16 top-10 -bottom-10 w-px bg-base-300 group-last:hidden"
-  >
-  </div>
+  {
+    !isLast && (
+      <div class="absolute left-10 md:left-16 top-10 -bottom-10 w-px bg-base-300" />
+    )
+  }
 
   {/* Date & Time Column */}
   {
