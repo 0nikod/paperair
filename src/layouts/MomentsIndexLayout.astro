@@ -26,7 +26,7 @@ const {
 <BaseLayout title={title} description={description} mainClass="max-w-5xl">
   <div class="flex flex-col md:flex-row gap-8 py-8 w-full">
     {/* Sidebar Filter */}
-    <aside class="w-full md:w-64 shrink-0">
+    <aside class="w-full md:w-64 shrink-0 order-1 md:order-2">
       <div class="sticky top-20">
         <MomentsFilter
           moments={allMoments}
@@ -61,7 +61,7 @@ const {
     </aside>
 
     {/* Main Timeline Content */}
-    <div class="grow w-full max-w-3xl">
+    <div class="grow w-full max-w-3xl order-2 md:order-1">
       <slot name="header">
         <h1 class="text-3xl font-bold mb-8 flex items-center gap-3">
           <Icon name="ri:time-line" class="text-primary w-8 h-8" />
