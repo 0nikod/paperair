@@ -8,6 +8,7 @@ interface Props {
   description?: string | undefined;
   image?: string | undefined;
   type?: "website" | "article" | string;
+  mainClass?: string | undefined;
 }
 
 const {
@@ -15,6 +16,7 @@ const {
   description = "A simple blog",
   image,
   type = "website",
+  mainClass = "max-w-5xl",
 } = Astro.props;
 ---
 
@@ -46,7 +48,7 @@ const {
 	>
 		<Navbar />
 
-		<main class="grow w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+		<main class={`grow w-full mx-auto px-4 sm:px-6 lg:px-8 ${mainClass}`}>
 			<slot />
 		</main>
 
