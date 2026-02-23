@@ -2,56 +2,61 @@
 import { Icon } from "astro-icon/components";
 ---
 
-<label
+<button
+  id="theme-toggle"
   class="swap swap-rotate btn btn-ghost btn-circle btn-sm h-9 w-9"
   aria-label="切换主题"
 >
-  <!-- this hidden checkbox controls the state -->
-  <input type="checkbox" class="theme-controller" value="paperair" />
-
-  <!-- sun icon for light mode (checked state) -->
+  <!-- sun icon for light mode -->
   <Icon name="ri:sun-line" class="swap-on h-5 w-5" />
 
-  <!-- moon icon for dark mode (unchecked state) -->
+  <!-- moon icon for dark mode -->
   <Icon name="ri:moon-line" class="swap-off h-5 w-5" />
-</label>
+</button>
 
-<script is:inline>
-  // Script runs immediately to prevent flash of incorrect theme
-  const getTheme = () => {
-    if (typeof localStorage !== "undefined" && localStorage.getItem("theme")) {
-      return localStorage.getItem("theme");
+<script>
+  // This script runs securely after the DOM has loaded
+  const toggle = document.getElementById("theme-toggle");
+
+  if (toggle) {
+    // 1. Initialize button state based on the current theme (which was set by BaseLayout.astro in <head>)
+    const currentTheme = document.documentElement.getAttribute("data-theme");
+    // "paperair" is light (swap-active for sun), "paperair-dark" is dark
+    if (currentTheme === "paperair") {
+      toggle.classList.add("swap-active");
+    } else {
+      toggle.classList.remove("swap-active");
     }
-    if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-      return "paperair-dark";
-    }
-    return "paperair";
-  };
 
-  const theme = getTheme();
-  const themeControllers = document.querySelectorAll(".theme-controller");
+    // 2. Handle button clicks
+    toggle.addEventListener("click", () => {
+      // Toggle the swap animation class
+      toggle.classList.toggle("swap-active");
 
-  // Initialize state
-  if (theme === "paperair-dark") {
-    document.documentElement.setAttribute("data-theme", "paperair-dark");
-    themeControllers.forEach((el) => {
-      if (el instanceof HTMLInputElement) el.checked = false; // paperair-dark is dark (unchecked moon)
-    });
-  } else {
-    document.documentElement.setAttribute("data-theme", "paperair");
-    themeControllers.forEach((el) => {
-      if (el instanceof HTMLInputElement) el.checked = true; // paperair is light (checked sun)
-    });
-  }
-
-  // Add event listeners to toggle
-  themeControllers.forEach((el) => {
-    el.addEventListener("change", (e) => {
-      const isLight = e.target.checked;
+      const isLight = toggle.classList.contains("swap-active");
       const newTheme = isLight ? "paperair" : "paperair-dark";
 
+      // Apply the theme and save it
       document.documentElement.setAttribute("data-theme", newTheme);
       localStorage.setItem("theme", newTheme);
     });
-  });
+  }
+
+  // 3. Optional: Sync changes if the OS preference changes while the user is browsing
+  // Only override if the user hasn't actively set a preference in localStorage
+  window
+    .matchMedia("(prefers-color-scheme: dark)")
+    .addEventListener("change", (e) => {
+      if (!localStorage.getItem("theme")) {
+        const newTheme = e.matches ? "paperair-dark" : "paperair";
+        document.documentElement.setAttribute("data-theme", newTheme);
+        if (toggle) {
+          if (newTheme === "paperair") {
+            toggle.classList.add("swap-active");
+          } else {
+            toggle.classList.remove("swap-active");
+          }
+        }
+      }
+    });
 </script>
