@@ -35,29 +35,31 @@ const momentUrl = `/moments/${year}/${month}/${day}/${moment.id.replace(
 )}/`;
 ---
 
-<div class:list={["flex gap-4 w-full relative group", className]}>
+<article class:list={["flex gap-4 w-full relative group", className]}>
   {/* Timeline vertical line */}
   {
     !isLast && (
-      <div class="absolute left-10 md:left-16 top-10 -bottom-10 w-px bg-base-300" />
+      <div
+        class="absolute left-10 md:left-16 top-10 -bottom-10 w-px bg-base-300"
+        aria-hidden="true"
+      />
     )
   }
 
   {/* Date & Time Column */}
-  {
-    /* On mobile, date can be above or small. Let's keep it left for desktop, and above for mobile?
-      Or just left always, with a responsive width. */
-  }
   <div class="w-20 md:w-32 shrink-0 flex flex-col items-end pt-1">
-    <div class="text-sm md:text-base font-bold text-base-content/80">
-      {showYear ? `${year}-${month}-${day}` : `${month}-${day}`}
-    </div>
-    <div class="text-xs text-base-content/50">{time}</div>
+    <time datetime={date.toISOString()} class="flex flex-col items-end">
+      <div class="text-sm md:text-base font-bold text-base-content/80">
+        {showYear ? `${year}-${month}-${day}` : `${month}-${day}`}
+      </div>
+      <div class="text-xs text-base-content/50">{time}</div>
+    </time>
   </div>
 
   {/* Timeline Dot */}
   <div
     class="relative z-10 w-4 h-4 mt-2 rounded-full border-2 border-primary bg-base-100 shrink-0 flex items-center justify-center"
+    aria-hidden="true"
   >
     <div
       class="w-1.5 h-1.5 bg-primary rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
@@ -119,85 +121,85 @@ const momentUrl = `/moments/${year}/${month}/${day}/${moment.id.replace(
       </div>
     </div>
   </moment-expandable>
-</div>
 
-<script>
-  class MomentExpandable extends HTMLElement {
-    constructor() {
-      super();
-      const container = this.querySelector(
-        "[data-content-container]"
-      ) as HTMLElement;
-      const expandBtn = this.querySelector(
-        "[data-expand-btn]"
-      ) as HTMLButtonElement;
-      const gradientCover = this.querySelector(
-        "[data-gradient-cover]"
-      ) as HTMLElement;
+  <script>
+    class MomentExpandable extends HTMLElement {
+      constructor() {
+        super();
+        const container = this.querySelector(
+          "[data-content-container]"
+        ) as HTMLElement;
+        const expandBtn = this.querySelector(
+          "[data-expand-btn]"
+        ) as HTMLButtonElement;
+        const gradientCover = this.querySelector(
+          "[data-gradient-cover]"
+        ) as HTMLElement;
 
-      const MAX_HEIGHT = 300; // pixels
-      let isExpanded = false;
+        const MAX_HEIGHT = 300; // pixels
+        let isExpanded = false;
 
-      // Check height after images or fonts load
-      const checkHeight = () => {
-        // Reset max-height momentarily to measure true height
-        container.style.maxHeight = "none";
-        const trueHeight = container.scrollHeight;
-
-        if (trueHeight > MAX_HEIGHT * 1.2) {
-          // Add 20% slack so we don't truncate just for a few pixels
-          if (!isExpanded) {
-            container.style.maxHeight = `${MAX_HEIGHT}px`;
-            expandBtn.classList.remove("hidden");
-            gradientCover.classList.remove("hidden");
-          }
-        } else {
+        // Check height after images or fonts load
+        const checkHeight = () => {
+          // Reset max-height momentarily to measure true height
           container.style.maxHeight = "none";
-          expandBtn.classList.add("hidden");
-          gradientCover.classList.add("hidden");
-        }
-      };
+          const trueHeight = container.scrollHeight;
 
-      // Initial check
-      checkHeight();
-
-      // Listen for window resize
-      window.addEventListener("resize", checkHeight);
-
-      // Handle button click
-      if (expandBtn) {
-        expandBtn.addEventListener("click", () => {
-          isExpanded = !isExpanded;
-          if (isExpanded) {
-            container.style.maxHeight = "none";
-            gradientCover.classList.add("hidden");
-            expandBtn.innerHTML = `收起 <span class="i-ri-arrow-up-s-line w-4 h-4"></span>`;
-          } else {
-            container.style.maxHeight = `${MAX_HEIGHT}px`;
-            gradientCover.classList.remove("hidden");
-            expandBtn.innerHTML = `展开全文 <span class="i-ri-arrow-down-s-line w-4 h-4"></span>`;
-
-            // Scroll back up if needed, so user doesn't lose context
-            const rect = this.getBoundingClientRect();
-            if (rect.top < 0) {
-              window.scrollBy({
-                top: rect.top - 100, // 100px offset for header
-                behavior: "smooth",
-              });
+          if (trueHeight > MAX_HEIGHT * 1.2) {
+            // Add 20% slack so we don't truncate just for a few pixels
+            if (!isExpanded) {
+              container.style.maxHeight = `${MAX_HEIGHT}px`;
+              expandBtn.classList.remove("hidden");
+              gradientCover.classList.remove("hidden");
             }
+          } else {
+            container.style.maxHeight = "none";
+            expandBtn.classList.add("hidden");
+            gradientCover.classList.add("hidden");
+          }
+        };
+
+        // Initial check
+        checkHeight();
+
+        // Listen for window resize
+        window.addEventListener("resize", checkHeight);
+
+        // Handle button click
+        if (expandBtn) {
+          expandBtn.addEventListener("click", () => {
+            isExpanded = !isExpanded;
+            if (isExpanded) {
+              container.style.maxHeight = "none";
+              gradientCover.classList.add("hidden");
+              expandBtn.innerHTML = `收起 <span class="i-ri-arrow-up-s-line w-4 h-4"></span>`;
+            } else {
+              container.style.maxHeight = `${MAX_HEIGHT}px`;
+              gradientCover.classList.remove("hidden");
+              expandBtn.innerHTML = `展开全文 <span class="i-ri-arrow-down-s-line w-4 h-4"></span>`;
+
+              // Scroll back up if needed, so user doesn't lose context
+              const rect = this.getBoundingClientRect();
+              if (rect.top < 0) {
+                window.scrollBy({
+                  top: rect.top - 100, // 100px offset for header
+                  behavior: "smooth",
+                });
+              }
+            }
+          });
+        }
+
+        // Also observe images loading within this component to re-check height
+        const images = this.querySelectorAll("img");
+        images.forEach((img) => {
+          if (!img.complete) {
+            img.addEventListener("load", checkHeight);
           }
         });
       }
-
-      // Also observe images loading within this component to re-check height
-      const images = this.querySelectorAll("img");
-      images.forEach((img) => {
-        if (!img.complete) {
-          img.addEventListener("load", checkHeight);
-        }
-      });
     }
-  }
 
-  customElements.define("moment-expandable", MomentExpandable);
-</script>
+    customElements.define("moment-expandable", MomentExpandable);
+  </script>
+</article>

@@ -10,7 +10,7 @@ interface Props {
 const { moment, class: className } = Astro.props;
 ---
 
-<div
+<article
   class:list={[
     "card bg-base-100 border border-base-200 hover:shadow-md transition-shadow",
     className,
@@ -37,4 +37,4 @@ const { moment, class: className } = Astro.props;
       </time>
     </div>
   </div>
-</div>
+</article>
