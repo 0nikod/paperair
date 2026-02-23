@@ -8,7 +8,7 @@ draft: false
 # heroImage: "/src/assets/header.png" # 文章封面图（可选）
 # category: "技术" # 主分类（可选）
 # author: "作者名" # 作者（可选）
-test: false # 是否为测试文章，设为 true 则在生产环境隐藏
+test: true # 是否为测试文章，设为 true 则在生产环境隐藏
 ---
 
 ## 标题
