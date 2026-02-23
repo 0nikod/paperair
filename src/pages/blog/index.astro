@@ -1,15 +1,9 @@
 ---
-import { getCollection } from "astro:content";
 import ArticleCard from "@components/ArticleCard.astro";
 import BaseLayout from "@layouts/BaseLayout.astro";
+import { getPublishedPosts } from "@utils/content";
 
-const allPosts = await getCollection("blog", ({ data }) => {
-  return data.draft !== true;
-});
-
-const sortedPosts = allPosts.sort(
-  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
-);
+const sortedPosts = await getPublishedPosts();
 ---
 
 <BaseLayout title="Blog | PaperAir" description="我的文章列表">

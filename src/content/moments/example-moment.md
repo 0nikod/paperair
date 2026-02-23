@@ -1,0 +1,12 @@
+---
+pubDate: 2026-02-23
+images:
+  - /src/assets/moments/example.jpg
+test: true
+---
+
+这是我的第一个 Moment！今天天气真好。
+
+- 学习了 Astro 内容集合
+- 创建了一个示例文件
+- 准备好记录更多精彩瞬间了！

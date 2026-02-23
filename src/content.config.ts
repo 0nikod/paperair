@@ -23,6 +23,7 @@ const moments = defineCollection({
   schema: z.object({
     pubDate: z.coerce.date(),
     images: z.array(z.string()).optional(),
+    test: z.boolean().default(false),
   }),
 });
 

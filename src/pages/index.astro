@@ -1,27 +1,15 @@
 ---
-import { getCollection } from "astro:content";
 import ArticleCard from "@components/ArticleCard.astro";
 import HeroLines from "@components/HeroLines.astro";
 import MomentCard from "@components/MomentCard.astro";
 import BaseLayout from "@layouts/BaseLayout.astro";
+import { getPublishedMoments, getPublishedPosts } from "@utils/content";
 
-// 尝试获取全量内容，按时间降序排列并截取前三篇
-const allBlogPosts = await getCollection("blog")
-  .then((posts) =>
-    posts
-      .filter((post) => !post.data.draft)
-      .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
-      .slice(0, 3),
-  )
-  .catch(() => []);
+// 获取最新 3 篇文章
+const allBlogPosts = await getPublishedPosts(3).catch(() => []);
 
-const allMoments = await getCollection("moments")
-  .then((moments) =>
-    moments
-      .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
-      .slice(0, 3),
-  )
-  .catch(() => []);
+// 获取最新 3 条动态
+const allMoments = await getPublishedMoments(3).catch(() => []);
 ---
 
 <BaseLayout
