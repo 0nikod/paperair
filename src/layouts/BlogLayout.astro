@@ -124,12 +124,21 @@ const toc = headings
 </BaseLayout>
 
 <style>
-  /* 引用块：左边框顶到卡片左边缘 */
+  /* 引用块：全宽背景，左边框顶到卡片左边缘 */
   :global(#article-content blockquote) {
     margin-left: calc(-1 * var(--card-p, 1.5rem));
-    padding-left: calc(var(--card-p, 1.5rem) - 4px);
+    margin-right: calc(-1 * var(--card-p, 1.5rem));
+    padding: 1rem var(--card-p, 1.5rem) 1rem calc(var(--card-p, 1.5rem) - 4px);
     border-left-width: 4px;
     border-radius: 0;
+    background-color: var(--color-base-300);
+    font-style: normal;
+  }
+
+  /* 移除引用块默认的引号 */
+  :global(#article-content blockquote p:before),
+  :global(#article-content blockquote p:after) {
+    content: none !important;
   }
 
   /* 代码块：横跨卡片全宽 */
