@@ -35,7 +35,7 @@ const time = date.toLocaleTimeString("zh-CN", {
 });
 
 const title = `动态记录 - ${year}-${month}-${day} - PaperAir`;
-const description = (moment.body || "").slice(0, 100) + "...";
+const description = `${(moment.body || "").slice(0, 100)}...`;
 ---
 
 <BaseLayout

@@ -21,10 +21,13 @@ export async function getStaticPaths() {
     if (!archiveMap.has(year)) {
       archiveMap.set(year, new Set());
     }
-    archiveMap.get(year)!.add(month);
+    archiveMap.get(year)?.add(month);
   });
 
-  const paths: any[] = [];
+  const paths: {
+    params: { year: string; month: string };
+    props: { allMoments: CollectionEntry<"moments">[] };
+  }[] = [];
   archiveMap.forEach((months, year) => {
     months.forEach((month) => {
       paths.push({

@@ -23,7 +23,7 @@ moments.forEach((moment) => {
   if (!archiveMap.has(year)) {
     archiveMap.set(year, new Set());
   }
-  archiveMap.get(year)!.add(month);
+  archiveMap.get(year)?.add(month);
 });
 
 // Convert to sorted array
