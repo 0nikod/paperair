@@ -1,0 +1,86 @@
+---
+import type { MarkdownHeading } from "astro";
+
+interface Props {
+  toc: (MarkdownHeading & { subHeadings: MarkdownHeading[] })[];
+}
+
+const { toc } = Astro.props;
+---
+
+<nav
+  class="card bg-base-100 shadow-sm border border-base-300 p-5"
+  id="toc-nav"
+  aria-label="文章目录"
+>
+  <header class="flex items-center gap-2 mb-4 text-base-content/80">
+    <span class="text-xl font-bold">#</span>
+    <span class="text-sm font-semibold">目录</span>
+  </header>
+  <ol class="toc-list text-sm space-y-1" id="toc-list">
+    {
+      toc.length > 0 ? (
+        toc.map((h2) => (
+          <li>
+            <a href={`#${h2.slug}`}>{h2.text}</a>
+            {h2.subHeadings.length > 0 && (
+              <ol>
+                {h2.subHeadings.map((h3) => (
+                  <li>
+                    <a href={`#${h3.slug}`}>{h3.text}</a>
+                  </li>
+                ))}
+              </ol>
+            )}
+          </li>
+        ))
+      ) : (
+        <li class="text-base-content/50 italic">暂无目录</li>
+      )
+    }
+  </ol>
+</nav>
+
+<style>
+  .toc-list {
+    list-style: none;
+    padding: 0;
+    counter-reset: toc-h2;
+  }
+
+  .toc-list :global(li) {
+    counter-increment: toc-h2;
+    counter-reset: toc-h3;
+  }
+
+  .toc-list :global(li > a) {
+    display: block;
+    padding: 0.25rem 0;
+    color: oklch(50% 0.01 260);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+
+  .toc-list :global(li > a::before) {
+    content: counters(toc-h2, ".") ". ";
+  }
+
+  .toc-list :global(li > a:hover) {
+    color: oklch(30% 0.01 260);
+  }
+
+  .toc-list :global(ol) {
+    list-style: none;
+    padding-left: 1rem;
+    counter-reset: toc-h3;
+  }
+
+  .toc-list :global(ol > li) {
+    counter-increment: toc-h3;
+    counter-reset: none;
+  }
+
+  .toc-list :global(ol > li > a::before) {
+    content: counters(toc-h2, ".") "." counter(toc-h3) ". ";
+  }
+</style>

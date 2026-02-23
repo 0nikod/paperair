@@ -6,9 +6,16 @@ import Navbar from "@components/Navbar.astro";
 interface Props {
   title?: string | undefined;
   description?: string | undefined;
+  image?: string | undefined;
+  type?: "website" | "article" | string;
 }
 
-const { title = "PaperAir", description = "A simple blog" } = Astro.props;
+const {
+  title = "PaperAir",
+  description = "A simple blog",
+  image,
+  type = "website",
+} = Astro.props;
 ---
 
 <!DOCTYPE html>
@@ -29,6 +36,10 @@ const { title = "PaperAir", description = "A simple blog" } = Astro.props;
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
 		<meta name="description" content={description} />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:type" content={type} />
+		{image && <meta property="og:image" content={new URL(image, Astro.url)} />}
 	</head>
 	<body
 		class="min-h-screen flex flex-col font-sans antialiased text-base-content selection:bg-primary/30 bg-base-200"
