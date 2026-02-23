@@ -7,6 +7,9 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
+    "check:astro": "astro check",
+    "check:biome": "biome check .",
+    "check": "pnpm check:astro && pnpm check:biome",
     "prepare": "husky"
   },
   "dependencies": {
