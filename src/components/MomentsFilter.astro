@@ -4,9 +4,9 @@ import { Icon } from "astro-icon/components";
 
 interface Props {
   moments: CollectionEntry<"moments">[];
-  activeYear?: string;
-  activeMonth?: string;
-  class?: string;
+  activeYear?: string | undefined;
+  activeMonth?: string | undefined;
+  class?: string | undefined;
 }
 
 const { moments, activeYear, activeMonth, class: className } = Astro.props;

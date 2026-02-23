@@ -1,0 +1,75 @@
+---
+import type { CollectionEntry } from "astro:content";
+import MomentsFilter from "@components/MomentsFilter.astro";
+import BaseLayout from "@layouts/BaseLayout.astro";
+import { Icon } from "astro-icon/components";
+
+interface Props {
+  title: string;
+  description: string;
+  allMoments: CollectionEntry<"moments">[];
+  activeYear?: string | undefined;
+  activeMonth?: string | undefined;
+  mobileDropdownText?: string | undefined;
+}
+
+const {
+  title,
+  description,
+  allMoments,
+  activeYear,
+  activeMonth,
+  mobileDropdownText = "归档导航",
+} = Astro.props;
+---
+
+<BaseLayout title={title} description={description} mainClass="max-w-5xl">
+  <div class="flex flex-col md:flex-row gap-8 py-8 w-full">
+    {/* Sidebar Filter */}
+    <aside class="w-full md:w-64 shrink-0">
+      <div class="sticky top-20">
+        <MomentsFilter
+          moments={allMoments}
+          activeYear={activeYear}
+          activeMonth={activeMonth}
+          class="hidden md:block"
+        />
+        <div class="md:hidden dropdown w-full">
+          <div
+            tabindex="0"
+            role="button"
+            class="btn btn-outline w-full justify-between"
+          >
+            <span class="flex items-center gap-2">
+              <Icon name="ri:calendar-2-line" class="w-5 h-5" />
+              {mobileDropdownText}
+            </span>
+            <Icon name="ri:arrow-down-s-line" class="w-4 h-4" />
+          </div>
+          <div
+            tabindex="0"
+            class="dropdown-content z-1 menu p-2 shadow bg-base-100 rounded-box w-full mt-2"
+          >
+            <MomentsFilter
+              moments={allMoments}
+              activeYear={activeYear}
+              activeMonth={activeMonth}
+            />
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    {/* Main Timeline Content */}
+    <div class="grow w-full max-w-3xl">
+      <slot name="header">
+        <h1 class="text-3xl font-bold mb-8 flex items-center gap-3">
+          <Icon name="ri:time-line" class="text-primary w-8 h-8" />
+          动态时刻
+        </h1>
+      </slot>
+
+      <slot />
+    </div>
+  </div>
+</BaseLayout>

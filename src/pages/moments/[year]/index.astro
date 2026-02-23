@@ -10,31 +10,18 @@ export async function getStaticPaths() {
     return import.meta.env.PROD ? data.test !== true : true;
   });
 
-  const archiveMap = new Map<string, Set<string>>();
+  const archiveSet = new Set<string>();
 
   allMoments.forEach((moment) => {
     const date = moment.data.pubDate;
     const year = date.getFullYear().toString();
-    const month = (date.getMonth() + 1).toString().padStart(2, "0");
-
-    if (!archiveMap.has(year)) {
-      archiveMap.set(year, new Set());
-    }
-    archiveMap.get(year)?.add(month);
+    archiveSet.add(year);
   });
 
-  const paths: {
-    params: { year: string; month: string };
-    props: { allMoments: CollectionEntry<"moments">[] };
-  }[] = [];
-  archiveMap.forEach((months, year) => {
-    months.forEach((month) => {
-      paths.push({
-        params: { year, month },
-        props: { allMoments }, // Pass down, or just fetch again inside, passing down is usually faster
-      });
-    });
-  });
+  const paths = Array.from(archiveSet).map((year) => ({
+    params: { year },
+    props: { allMoments },
+  }));
 
   return paths;
 }
@@ -43,24 +30,16 @@ interface Props {
   allMoments: CollectionEntry<"moments">[];
 }
 
-const { year, month } = Astro.params;
-const { allMoments } = Astro.props as Props;
+const { year } = Astro.params;
+const { allMoments } = Astro.props;
 
-// Filter for this specific year/month
+// Filter for this specific year
 const sortedMoments = allMoments
-  .filter((m: CollectionEntry<"moments">) => {
-    const d = m.data.pubDate;
-    const mYear = d.getFullYear().toString();
-    const mMonth = (d.getMonth() + 1).toString().padStart(2, "0");
-    return mYear === year && mMonth === month;
-  })
-  .sort(
-    (a: CollectionEntry<"moments">, b: CollectionEntry<"moments">) =>
-      b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
-  );
+  .filter((m) => m.data.pubDate.getFullYear().toString() === year)
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 
-const title = `${year}年${month}月 - 动态归档`;
-const description = `查看${year}年${month}月的动态记录。`;
+const title = `${year}年 - 动态归档`;
+const description = `查看${year}年的动态记录。`;
 
 // Pre-calculate showYear to avoid complex logic in JSX
 const momentsWithYear = sortedMoments.map((moment, index) => {
@@ -80,18 +59,17 @@ const momentsWithYear = sortedMoments.map((moment, index) => {
   description={description}
   allMoments={allMoments}
   activeYear={year}
-  activeMonth={month}
-  mobileDropdownText={`归档: ${year}-${month}`}
+  mobileDropdownText={`归档: ${year}年`}
 >
   <h1 slot="header" class="text-3xl font-bold mb-8 flex items-center gap-3">
     <Icon name="ri:time-line" class="text-primary w-8 h-8" />
-    {year}年 {month}月的动态 ({sortedMoments.length})
+    {year}年的动态 ({sortedMoments.length})
   </h1>
 
   {
     sortedMoments.length === 0 ? (
       <div class="text-center py-20 text-base-content/50">
-        <p>该月无动态</p>
+        <p>该年无动态</p>
       </div>
     ) : (
       <div class="flex flex-col gap-8 w-full">
