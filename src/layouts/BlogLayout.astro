@@ -81,7 +81,7 @@ const toc = headings
         <!-- 卡片内容区 -->
         <div class="card-body">
           <!-- 文章头部信息 -->
-          <header class="mb-6">
+          <header class="mb-2">
             <h1
               class="text-3xl sm:text-4xl font-extrabold text-base-content leading-tight"
             >
@@ -114,8 +114,8 @@ const toc = headings
             id="article-content"
             data-pagefind-body
           >
-            <span data-pagefind-filter="type:blog" class="hidden"></span>
             <slot />
+            <span data-pagefind-filter="type:blog" class="hidden"></span>
           </div>
         </div>
       </article>
