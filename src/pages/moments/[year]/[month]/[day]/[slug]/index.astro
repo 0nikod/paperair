@@ -1,0 +1,89 @@
+---
+import { getCollection, render } from "astro:content";
+import ImageGrid from "@components/ImageGrid.astro";
+import BaseLayout from "@layouts/BaseLayout.astro";
+import { Icon } from "astro-icon/components";
+
+export async function getStaticPaths() {
+  const allMoments = await getCollection("moments", ({ data }) => {
+    return import.meta.env.PROD ? data.test !== true : true;
+  });
+
+  return allMoments.map((moment) => {
+    const date = moment.data.pubDate;
+    const year = date.getFullYear().toString();
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const day = date.getDate().toString().padStart(2, "0");
+
+    return {
+      params: { year, month, day, slug: moment.id.replace(/\.[^/.]+$/, "") },
+      props: { moment },
+    };
+  });
+}
+
+const { moment } = Astro.props;
+const { Content } = await render(moment);
+
+const date = moment.data.pubDate;
+const year = date.getFullYear().toString();
+const month = (date.getMonth() + 1).toString().padStart(2, "0");
+const day = date.getDate().toString().padStart(2, "0");
+const time = date.toLocaleTimeString("zh-CN", {
+  hour: "2-digit",
+  minute: "2-digit",
+});
+
+const title = `动态记录 - ${year}-${month}-${day} - PaperAir`;
+const description = (moment.body || "").slice(0, 100) + "...";
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  mainClass="max-w-3xl pt-12 pb-20"
+>
+  <article
+    class="bg-base-100 rounded-2xl shadow-sm border border-base-200 p-6 md:p-10 relative"
+  >
+    {/* Header / Meta */}
+    <header
+      class="flex items-center justify-between mb-6 pb-6 border-b border-base-200/50"
+    >
+      <div class="flex items-center gap-3">
+        <div
+          class="w-12 h-12 bg-primary/10 text-primary rounded-full flex flex-col items-center justify-center font-bold"
+        >
+          <span class="text-xs leading-none">{month}</span>
+          <span class="text-sm leading-none">{day}</span>
+        </div>
+        <div>
+          <div class="font-medium">{year}年{month}月{day}日</div>
+          <div class="text-sm text-base-content/50 flex items-center gap-1">
+            <Icon name="ri:time-line" class="w-3.5 h-3.5" />
+            {time}
+          </div>
+        </div>
+      </div>
+      <div>
+        <a href="/moments" class="btn btn-ghost btn-sm text-base-content/50">
+          <Icon name="ri:arrow-left-line" class="w-4 h-4 mr-1" /> 返回列表
+        </a>
+      </div>
+    </header>
+
+    {/* Content */}
+    <div class="prose prose-base max-w-none prose-a:text-primary mb-8">
+      <Content />
+    </div>
+
+    {/* Images */}
+    {
+      moment.data.images && moment.data.images.length > 0 && (
+        <div class="mt-4">
+          <ImageGrid images={moment.data.images} class="gap-4" />
+        </div>
+      )
+    }
+  </article>
+</BaseLayout>

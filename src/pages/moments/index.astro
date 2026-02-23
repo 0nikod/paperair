@@ -1,0 +1,91 @@
+---
+import { getCollection } from "astro:content";
+import MomentsFilter from "@components/MomentsFilter.astro";
+import MomentTimelineItem from "@components/MomentTimelineItem.astro";
+import BaseLayout from "@layouts/BaseLayout.astro";
+import { Icon } from "astro-icon/components";
+
+const title = "动态 - PaperAir";
+const description = "这里记录了我的日常与瞬间。";
+
+// Fetch and sort moments
+const allMoments = await getCollection("moments", ({ data }) => {
+  return import.meta.env.PROD ? data.test !== true : true;
+});
+
+const sortedMoments = allMoments.sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+
+// Pre-calculate showYear to avoid complex logic in JSX
+const momentsWithYear = sortedMoments.map((moment, index) => {
+  const momentYear = moment.data.pubDate.getFullYear().toString();
+  const prevYear = sortedMoments[index - 1]?.data.pubDate
+    .getFullYear()
+    .toString();
+  return {
+    ...moment,
+    showYear: momentYear !== prevYear,
+  };
+});
+---
+
+<BaseLayout title={title} description={description} mainClass="max-w-5xl">
+  <div class="flex flex-col md:flex-row gap-8 py-8 w-full">
+    {
+      /* Sidebar Filter - Hidden on very small screens, shown alongside on md+ */
+    }
+    <aside class="w-full md:w-64 shrink-0">
+      <div class="sticky top-20">
+        <MomentsFilter moments={sortedMoments} class="hidden md:block" />
+        {
+          /* Mobile Filter Button/Dropdown could go here, or just let users scroll */
+        }
+        <div class="md:hidden dropdown w-full">
+          <div
+            tabindex="0"
+            role="button"
+            class="btn btn-outline w-full justify-between"
+          >
+            <span class="flex items-center gap-2">
+              <Icon name="ri:calendar-2-line" class="w-5 h-5" /> 归档导航
+            </span>
+            <Icon name="ri:arrow-down-s-line" class="w-4 h-4" />
+          </div>
+          <div
+            tabindex="0"
+            class="dropdown-content z-1 menu p-2 shadow bg-base-100 rounded-box w-full mt-2"
+          >
+            <MomentsFilter moments={sortedMoments} />
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    {/* Main Timeline Content */}
+    <div class="grow w-full max-w-3xl">
+      <h1 class="text-3xl font-bold mb-8 flex items-center gap-3">
+        <Icon name="ri:time-line" class="text-primary w-8 h-8" />
+        动态时刻
+      </h1>
+
+      {
+        sortedMoments.length === 0 ? (
+          <div class="text-center py-20 text-base-content/50">
+            <Icon
+              name="ri:ghost-line"
+              class="w-12 h-12 mx-auto mb-4 opacity-50"
+            />
+            <p>暂无动态</p>
+          </div>
+        ) : (
+          <div class="flex flex-col gap-8 w-full">
+            {momentsWithYear.map((moment) => (
+              <MomentTimelineItem moment={moment} showYear={moment.showYear} />
+            ))}
+          </div>
+        )
+      }
+    </div>
+  </div>
+</BaseLayout>

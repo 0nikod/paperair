@@ -30,14 +30,15 @@ const blog = defineCollection({
 
 const moments = defineCollection({
   loader: glob({ pattern: "**/*.md", base: "./src/content/moments" }),
-  schema: z.object({
-    /** 发布日期 */
-    pubDate: z.coerce.date(),
-    /** 图片列表 */
-    images: z.array(z.string()).optional(),
-    /** 是否为测试动态，设为 true 则在生产环境隐藏 */
-    test: z.boolean().default(false),
-  }),
+  schema: ({ image }) =>
+    z.object({
+      /** 发布日期 */
+      pubDate: z.coerce.date(),
+      /** 图片列表 */
+      images: z.array(image()).optional(),
+      /** 是否为测试动态，设为 true 则在生产环境隐藏 */
+      test: z.boolean().default(false),
+    }),
 });
 
 export const collections = { blog, moments };

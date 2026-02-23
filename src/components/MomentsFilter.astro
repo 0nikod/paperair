@@ -1,0 +1,74 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { Icon } from "astro-icon/components";
+
+interface Props {
+  moments: CollectionEntry<"moments">[];
+  activeYear?: string;
+  activeMonth?: string;
+  class?: string;
+}
+
+const { moments, activeYear, activeMonth, class: className } = Astro.props;
+
+// Group moments by year and month
+const archiveMap = new Map<string, Set<string>>();
+
+moments.forEach((moment) => {
+  const date = moment.data.pubDate;
+  const year = date.getFullYear().toString();
+  // Ensure month is 2 digits
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+
+  if (!archiveMap.has(year)) {
+    archiveMap.set(year, new Set());
+  }
+  archiveMap.get(year)!.add(month);
+});
+
+// Convert to sorted array
+const archives = Array.from(archiveMap.entries())
+  .map(([year, monthsSet]) => ({
+    year,
+    months: Array.from(monthsSet).sort((a, b) => b.localeCompare(a)), // Descending months
+  }))
+  .sort((a, b) => b.year.localeCompare(a.year)); // Descending years
+---
+
+<div class:list={["w-full", className]}>
+  <h2 class="text-lg font-bold mb-4 px-4 flex items-center gap-2">
+    <Icon name="ri:calendar-2-line" class="w-5 h-5" /> 归档
+  </h2>
+  <ul class="menu bg-base-200/50 w-full rounded-box">
+    <li>
+      <a href="/moments" class={!activeYear && !activeMonth ? "active" : ""}>
+        全部动态
+      </a>
+    </li>
+    {
+      archives.map((archive) => (
+        <li>
+          <details open={activeYear === archive.year || !activeYear}>
+            <summary class="font-medium">{archive.year} 年</summary>
+            <ul>
+              {archive.months.map((month) => {
+                const isActive =
+                  activeYear === archive.year && activeMonth === month;
+                return (
+                  <li>
+                    <a
+                      href={`/moments/${archive.year}/${month}/`}
+                      class={isActive ? "active font-bold" : ""}
+                    >
+                      {month} 月
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+          </details>
+        </li>
+      ))
+    }
+  </ul>
+</div>

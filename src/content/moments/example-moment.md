@@ -1,7 +1,5 @@
 ---
 pubDate: 2026-02-23
-images:
-  - /src/assets/moments/example.jpg
 test: true
 ---
 

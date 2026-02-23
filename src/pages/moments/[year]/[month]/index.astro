@@ -1,0 +1,135 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { getCollection } from "astro:content";
+import MomentsFilter from "@components/MomentsFilter.astro";
+import MomentTimelineItem from "@components/MomentTimelineItem.astro";
+import BaseLayout from "@layouts/BaseLayout.astro";
+import { Icon } from "astro-icon/components";
+
+export async function getStaticPaths() {
+  const allMoments = await getCollection("moments", ({ data }) => {
+    return import.meta.env.PROD ? data.test !== true : true;
+  });
+
+  const archiveMap = new Map<string, Set<string>>();
+
+  allMoments.forEach((moment) => {
+    const date = moment.data.pubDate;
+    const year = date.getFullYear().toString();
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+
+    if (!archiveMap.has(year)) {
+      archiveMap.set(year, new Set());
+    }
+    archiveMap.get(year)!.add(month);
+  });
+
+  const paths: any[] = [];
+  archiveMap.forEach((months, year) => {
+    months.forEach((month) => {
+      paths.push({
+        params: { year, month },
+        props: { allMoments }, // Pass down, or just fetch again inside, passing down is usually faster
+      });
+    });
+  });
+
+  return paths;
+}
+
+interface Props {
+  allMoments: CollectionEntry<"moments">[];
+}
+
+const { year, month } = Astro.params;
+const { allMoments } = Astro.props as Props;
+
+// Filter for this specific year/month
+const sortedMoments = allMoments
+  .filter((m: CollectionEntry<"moments">) => {
+    const d = m.data.pubDate;
+    const mYear = d.getFullYear().toString();
+    const mMonth = (d.getMonth() + 1).toString().padStart(2, "0");
+    return mYear === year && mMonth === month;
+  })
+  .sort(
+    (a: CollectionEntry<"moments">, b: CollectionEntry<"moments">) =>
+      b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+  );
+
+const title = `${year}年${month}月 - 动态归档`;
+const description = `查看${year}年${month}月的动态记录。`;
+
+// Pre-calculate showYear to avoid complex logic in JSX
+const momentsWithYear = sortedMoments.map((moment, index) => {
+  const momentYear = moment.data.pubDate.getFullYear().toString();
+  const prevYear = sortedMoments[index - 1]?.data.pubDate
+    .getFullYear()
+    .toString();
+  return {
+    ...moment,
+    showYear: momentYear !== prevYear,
+  };
+});
+---
+
+<BaseLayout title={title} description={description} mainClass="max-w-5xl">
+  <div class="flex flex-col md:flex-row gap-8 py-8 w-full">
+    {/* Sidebar Filter */}
+    <aside class="w-full md:w-64 shrink-0">
+      <div class="sticky top-20">
+        <MomentsFilter
+          moments={allMoments}
+          activeYear={year as string}
+          activeMonth={month as string}
+          class="hidden md:block"
+        />
+        <div class="md:hidden dropdown w-full">
+          <div
+            tabindex="0"
+            role="button"
+            class="btn btn-outline w-full justify-between"
+          >
+            <span class="flex items-center gap-2">
+              <Icon name="ri:calendar-2-line" class="w-5 h-5" />
+              归档: {year}-{month}
+            </span>
+            <Icon name="ri:arrow-down-s-line" class="w-4 h-4" />
+          </div>
+          <div
+            tabindex="0"
+            class="dropdown-content z-1 menu p-2 shadow bg-base-100 rounded-box w-full mt-2"
+          >
+            <MomentsFilter
+              moments={allMoments}
+              activeYear={year as string}
+              activeMonth={month as string}
+            />
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    {/* Main Timeline Content */}
+    <div class="grow w-full max-w-3xl">
+      <h1 class="text-3xl font-bold mb-8 flex items-center gap-3">
+        <Icon name="ri:time-line" class="text-primary w-8 h-8" />
+        {year}年 {month}月的动态 ({sortedMoments.length})
+      </h1>
+
+      {
+        sortedMoments.length === 0 ? (
+          <div class="text-center py-20 text-base-content/50">
+            <p>该月无动态</p>
+          </div>
+        ) : (
+          <div class="flex flex-col gap-8 w-full">
+            {momentsWithYear.map((moment) => (
+              <MomentTimelineItem moment={moment} showYear={moment.showYear} />
+            ))}
+          </div>
+        )
+      }
+    </div>
+  </div>
+</BaseLayout>
