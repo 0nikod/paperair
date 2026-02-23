@@ -61,7 +61,8 @@ const {
     </aside>
 
     {/* Main Timeline Content */}
-    <div class="grow w-full max-w-3xl order-2 md:order-1">
+    <div class="grow w-full max-w-3xl order-2 md:order-1" data-pagefind-body>
+      <span data-pagefind-filter="type:moment" class="hidden"></span>
       <slot name="header">
         <h1 class="text-3xl font-bold mb-8 flex items-center gap-3">
           <Icon name="ri:time-line" class="text-primary w-8 h-8" />

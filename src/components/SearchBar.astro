@@ -8,17 +8,169 @@ interface Props {
 const { class: className = "" } = Astro.props;
 ---
 
-<div class={`form-control ${className}`}>
-  <label class="relative flex items-center">
-    <span class="sr-only">搜索</span>
-    <Icon
-      name="ri:search-line"
-      class="absolute left-3 w-4 h-4 text-base-content/40"
-    />
-    <input
-      type="search"
-      placeholder="搜索..."
-      class="input input-sm h-9 bg-base-200/80 border-transparent hover:bg-base-200 rounded-full pl-9 w-32 sm:w-48 lg:w-56 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary focus:bg-base-100 transition-all text-sm shadow-inner"
-    />
-  </label>
-</div>
+<site-search class={`form-control ${className}`}>
+  <div class="relative">
+    <label class="relative flex items-center">
+      <span class="sr-only">搜索</span>
+      <Icon
+        name="ri:search-line"
+        class="absolute left-3 w-4 h-4 text-base-content/40 pointer-events-none"
+      />
+      <input
+        type="search"
+        placeholder="搜索..."
+        class="input input-sm h-9 bg-base-200/80 border-transparent hover:bg-base-200 rounded-full pl-9 w-32 sm:w-48 lg:w-56 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary focus:bg-base-100 focus:w-72 transition-all text-sm shadow-inner"
+        data-search-input
+        autocomplete="off"
+      />
+    </label>
+
+    <!-- 搜索结果下拉面板 -->
+    <div
+      class="absolute right-0 top-full mt-2 w-88 bg-base-100 border border-base-300 rounded-box shadow-xl z-50 hidden overflow-hidden"
+      data-search-results
+    >
+      <!-- 分类筛选 -->
+      <div
+        class="flex items-center gap-1 px-3 pt-3 pb-2 border-b border-base-200"
+      >
+        <button
+          class="badge badge-primary badge-sm cursor-pointer"
+          data-filter="all">全部</button
+        >
+        <button
+          class="badge badge-outline badge-sm cursor-pointer"
+          data-filter="blog">文章</button
+        >
+        <button
+          class="badge badge-outline badge-sm cursor-pointer"
+          data-filter="moment">动态</button
+        >
+      </div>
+
+      <!-- 结果列表 -->
+      <ul class="menu menu-sm p-2 max-h-80 overflow-y-auto" data-search-list>
+        <li
+          class="px-3 py-6 text-center text-base-content/40 text-sm"
+          data-search-empty
+        >
+          输入关键词开始搜索
+        </li>
+      </ul>
+    </div>
+  </div>
+</site-search>
+
+<script>
+  import { search, type SearchFilter } from "@/utils/pagefinder";
+
+  class SiteSearch extends HTMLElement {
+    private input: HTMLInputElement;
+    private panel: HTMLElement;
+    private list: HTMLElement;
+    private filterBtns: NodeListOf<HTMLElement>;
+    private debounceTimer: ReturnType<typeof setTimeout> | null = null;
+    private currentFilter: SearchFilter = "all";
+
+    constructor() {
+      super();
+      this.input = this.querySelector("[data-search-input]")!;
+      this.panel = this.querySelector("[data-search-results]")!;
+      this.list = this.querySelector("[data-search-list]")!;
+      this.filterBtns = this.querySelectorAll("[data-filter]");
+    }
+
+    connectedCallback() {
+      // 输入事件 — 带 300ms 防抖
+      this.input.addEventListener("input", () => {
+        if (this.debounceTimer) clearTimeout(this.debounceTimer);
+        this.debounceTimer = setTimeout(() => this.doSearch(), 300);
+      });
+
+      // 聚焦时展开面板
+      this.input.addEventListener("focus", () => {
+        this.panel.classList.remove("hidden");
+      });
+
+      // 点击外部关闭
+      document.addEventListener("click", (e) => {
+        if (!this.contains(e.target as Node)) {
+          this.panel.classList.add("hidden");
+        }
+      });
+
+      // 分类筛选按钮
+      for (const btn of this.filterBtns) {
+        btn.addEventListener("click", () => {
+          this.currentFilter = btn.dataset.filter as SearchFilter;
+          this.updateFilterUI();
+          this.doSearch();
+        });
+      }
+    }
+
+    private updateFilterUI() {
+      for (const btn of this.filterBtns) {
+        if (btn.dataset.filter === this.currentFilter) {
+          btn.classList.add("badge-primary");
+          btn.classList.remove("badge-outline");
+        } else {
+          btn.classList.remove("badge-primary");
+          btn.classList.add("badge-outline");
+        }
+      }
+    }
+
+    private async doSearch() {
+      const query = this.input.value.trim();
+      if (!query) {
+        this.list.innerHTML = "";
+        this.list.appendChild(this.createEmpty("输入关键词开始搜索"));
+        return;
+      }
+
+      // 搜索中提示
+      this.list.innerHTML = "";
+      this.list.appendChild(this.createEmpty("搜索中..."));
+
+      const results = await search(query, this.currentFilter);
+
+      this.list.innerHTML = "";
+      if (results.length === 0) {
+        this.list.appendChild(this.createEmpty("未找到相关结果"));
+        return;
+      }
+
+      for (const item of results) {
+        const li = document.createElement("li");
+        const a = document.createElement("a");
+        a.href = item.url;
+        a.className = "flex flex-col gap-1 items-start py-2";
+        a.innerHTML = `
+          <span class="flex items-center gap-2">
+            <span class="badge badge-xs ${
+              item.type === "blog" ? "badge-primary" : "badge-secondary"
+            }">${item.type === "blog" ? "文章" : "动态"}</span>
+            <span class="font-medium text-base-content text-sm line-clamp-1">${
+              item.title
+            }</span>
+          </span>
+          <span class="text-xs text-base-content/50 line-clamp-2 [&>mark]:bg-primary/20 [&>mark]:text-base-content">${
+            item.excerpt
+          }</span>
+        `;
+        li.appendChild(a);
+        this.list.appendChild(li);
+      }
+    }
+
+    private createEmpty(text: string): HTMLLIElement {
+      const li = document.createElement("li");
+      li.className = "px-3 py-6 text-center text-base-content/40 text-sm";
+      li.textContent = text;
+      return li;
+    }
+  }
+
+  customElements.define("site-search", SiteSearch);
+</script>

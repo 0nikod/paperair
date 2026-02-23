@@ -109,7 +109,12 @@ const toc = headings
           </header>
 
           <!-- Markdown 渲染区域 -->
-          <div class="prose prose-base max-w-none" id="article-content">
+          <div
+            class="prose prose-base max-w-none"
+            id="article-content"
+            data-pagefind-body
+          >
+            <span data-pagefind-filter="type:blog" class="hidden"></span>
             <slot />
           </div>
         </div>
