@@ -56,7 +56,7 @@ const archives = Array.from(archiveMap.entries())
               <a
                 href={`/moments/${archive.year}/`}
                 class:list={[
-                  "flex-1 px-4 py-2 rounded-r-none hover:bg-base-content/10",
+                  "flex-1 px-4 py-2 rounded-l-btn rounded-r-none hover:bg-base-content/10",
                   activeYear === archive.year && !activeMonth
                     ? "active font-bold"
                     : "font-medium",
@@ -65,7 +65,7 @@ const archives = Array.from(archiveMap.entries())
               >
                 {archive.year} 年
               </a>
-              <span class="px-3 py-2 rounded-l-none flex items-center justify-center hover:bg-base-content/10 cursor-pointer">
+              <span class="px-3 py-2 rounded-r-btn rounded-l-none flex items-center justify-center hover:bg-base-content/10 cursor-pointer">
                 <Icon
                   name="ri:arrow-down-s-line"
                   class="w-5 h-5 transition-transform duration-200 group-open:-rotate-180"

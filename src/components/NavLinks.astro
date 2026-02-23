@@ -42,7 +42,7 @@ const isActive = (href: string) => {
           <li class="h-16 flex items-center">
             <a
               href={link.href}
-              class={`relative text-[15px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary rounded-sm h-full flex items-center
+              class={`relative text-[15px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary rounded-btn h-full flex items-center
                   ${
                     active
                       ? "text-primary"
@@ -52,7 +52,7 @@ const isActive = (href: string) => {
             >
               {link.text}
               {active && (
-                <span class="absolute bottom-2 left-0 w-full h-[3px] bg-primary rounded-t-lg shadow-[0_-2px_8px_rgba(var(--color-primary),0.5)]" />
+                <span class="absolute bottom-2 left-0 w-full h-[3px] bg-primary rounded-t-md shadow-[0_-2px_8px_rgba(var(--color-primary),0.5)]" />
               )}
             </a>
           </li>
