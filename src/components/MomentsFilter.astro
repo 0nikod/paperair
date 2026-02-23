@@ -48,8 +48,30 @@ const archives = Array.from(archiveMap.entries())
     {
       archives.map((archive) => (
         <li>
-          <details open={activeYear === archive.year || !activeYear}>
-            <summary class="font-medium">{archive.year} 年</summary>
+          <details
+            open={activeYear === archive.year || !activeYear}
+            class="group"
+          >
+            <summary class="p-0 hover:bg-transparent active:bg-transparent active:text-current [&::after]:hidden flex">
+              <a
+                href={`/moments/${archive.year}/`}
+                class:list={[
+                  "flex-1 px-4 py-2 rounded-r-none hover:bg-base-content/10",
+                  activeYear === archive.year && !activeMonth
+                    ? "active font-bold"
+                    : "font-medium",
+                ]}
+                onclick="event.stopPropagation();"
+              >
+                {archive.year} 年
+              </a>
+              <span class="px-3 py-2 rounded-l-none flex items-center justify-center hover:bg-base-content/10 cursor-pointer">
+                <Icon
+                  name="ri:arrow-down-s-line"
+                  class="w-5 h-5 transition-transform duration-200 group-open:-rotate-180"
+                />
+              </span>
+            </summary>
             <ul>
               {archive.months.map((month) => {
                 const isActive =
