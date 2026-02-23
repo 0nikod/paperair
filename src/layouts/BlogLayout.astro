@@ -1,81 +1,203 @@
 ---
 import type { CollectionEntry } from "astro:content";
-import { Icon } from "astro-icon/components";
-import BaseLayout from "./BaseLayout.astro";
+import BaseLayout from "@layouts/BaseLayout.astro";
 
 interface Props {
   post: CollectionEntry<"blog">;
 }
 
 const { post } = Astro.props;
-const { title, description, pubDate, updatedDate, tags } = post.data;
+const { title, description, pubDate, updatedDate, heroImage } = post.data;
+
+const formattedPubDate = pubDate.toLocaleDateString("zh-CN", {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+});
+
+const formattedUpdatedDate = updatedDate?.toLocaleDateString("zh-CN", {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+});
 ---
 
-<BaseLayout title={`${title} | PaperAir`} description={description || ""}>
-  <div class="py-12 sm:py-16">
-    <article
-      class="prose prose-base sm:prose-lg max-w-4xl mx-auto dark:prose-invert prose-headings:font-bold prose-headings:text-base-content prose-a:text-primary hover:prose-a:text-primary/80 prose-a:transition-colors prose-img:rounded-xl prose-img:shadow-lg prose-pre:bg-base-200 prose-pre:text-base-content prose-pre:border prose-pre:border-base-300"
-    >
-      <header class="not-prose mb-12 flex flex-col items-center text-center">
-        <h1 class="text-4xl sm:text-5xl font-extrabold mb-6 text-base-content">
-          {title}
-        </h1>
-
-        <div
-          class="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-sm text-base-content/70"
-        >
-          <time
-            datetime={pubDate.toISOString()}
-            class="flex items-center gap-1.5"
-          >
-            <Icon name="ri:calendar-line" class="w-4 h-4" />
-            发布于 {
-              pubDate.toLocaleDateString("zh-CN", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              })
-            }
-          </time>
-
-          {
-            updatedDate && (
-              <span class="flex items-center gap-1.5">
-                <Icon name="ri:refresh-line" class="w-4 h-4" />
-                更新于{" "}
-                {updatedDate.toLocaleDateString("zh-CN", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
-              </span>
-            )
-          }
-        </div>
-
+<BaseLayout title={`${title} | PaperAir`} description={description}>
+  <div class="blog-layout py-8 lg:py-12">
+    <!-- 两栏布局：文章 + TOC -->
+    <div class="lg:grid lg:grid-cols-[1fr_220px] lg:gap-10">
+      <!-- 文章主体 -->
+      <article class="min-w-0">
+        <!-- 封面图 -->
         {
-          tags && tags.length > 0 && (
-            <div class="mt-6 flex gap-2 flex-wrap justify-center">
-              {tags.map((tag: string) => (
-                <span class="badge badge-neutral badge-lg">{tag}</span>
-              ))}
-            </div>
+          heroImage && (
+            <figure class="mb-8">
+              <img
+                src={heroImage}
+                alt={title}
+                class="w-full object-cover max-h-80"
+              />
+            </figure>
           )
         }
-      </header>
 
-      <div class="divider mb-12"></div>
+        <!-- 文章头部信息 -->
+        <header class="mb-8">
+          <h1
+            class="text-3xl sm:text-4xl font-extrabold text-base-content leading-tight"
+          >
+            {title}
+          </h1>
+          {
+            description && (
+              <p class="mt-3 text-lg text-base-content/60">{description}</p>
+            )
+          }
+          <div
+            class="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-base-content/50"
+          >
+            <time datetime={pubDate.toISOString()}>
+              {formattedPubDate}
+            </time>
+            {
+              formattedUpdatedDate && (
+                <span>(更新于 {formattedUpdatedDate})</span>
+              )
+            }
+            <span class="reading-time"></span>
+          </div>
+          <div class="divider mt-6 mb-0"></div>
+        </header>
 
-      <slot />
-    </article>
+        <!-- Markdown 渲染区域 -->
+        <div class="prose prose-base max-w-none" id="article-content">
+          <slot />
+        </div>
+      </article>
 
-    <div
-      class="mt-16 pt-8 border-t border-base-300 max-w-4xl mx-auto flex justify-center"
-    >
-      <a href="/blog" class="btn btn-ghost">
-        <Icon name="ri:arrow-left-line" class="w-5 h-5" />
-        返回文章列表
-      </a>
+      <!-- 右侧 TOC -->
+      <aside class="hidden lg:block">
+        <nav class="sticky top-20" id="toc-nav">
+          <header class="flex items-center gap-2 mb-4 text-base-content/80">
+            <span class="text-xl font-bold">#</span>
+            <span class="text-sm font-semibold">目录</span>
+          </header>
+          <ol class="toc-list text-sm space-y-1" id="toc-list">
+            <!-- 由客户端 JS 动态生成 -->
+          </ol>
+        </nav>
+      </aside>
     </div>
   </div>
 </BaseLayout>
+
+<style>
+  .toc-list {
+    list-style: none;
+    padding: 0;
+    counter-reset: toc-h2;
+  }
+
+  .toc-list :global(li) {
+    counter-increment: toc-h2;
+    counter-reset: toc-h3;
+  }
+
+  .toc-list :global(li > a) {
+    display: block;
+    padding: 0.25rem 0;
+    color: oklch(50% 0.01 260);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+
+  .toc-list :global(li > a::before) {
+    content: counters(toc-h2, ".") ". ";
+  }
+
+  .toc-list :global(li > a:hover) {
+    color: oklch(30% 0.01 260);
+  }
+
+  .toc-list :global(ol) {
+    list-style: none;
+    padding-left: 1rem;
+    counter-reset: toc-h3;
+  }
+
+  .toc-list :global(ol > li) {
+    counter-increment: toc-h3;
+    counter-reset: none;
+  }
+
+  .toc-list :global(ol > li > a::before) {
+    content: counters(toc-h2, ".") "." counter(toc-h3) ". ";
+  }
+</style>
+
+<script>
+  function buildToc() {
+    const article = document.getElementById("article-content");
+    const tocList = document.getElementById("toc-list");
+    if (!article || !tocList) return;
+
+    const headings = article.querySelectorAll("h2, h3");
+    if (headings.length === 0) {
+      const nav = document.getElementById("toc-nav");
+      if (nav) nav.style.display = "none";
+      return;
+    }
+
+    // 计算阅读时长
+    const text = article.textContent || "";
+    const wordCount = text.length;
+    const readingMinutes = Math.max(1, Math.ceil(wordCount / 500));
+    const readingTimeEl = document.querySelector(".reading-time");
+    if (readingTimeEl) {
+      readingTimeEl.textContent = `阅读时长约 ${readingMinutes} 分钟`;
+    }
+
+    // 构建 TOC
+    let currentH2Item: HTMLLIElement | null = null;
+    let currentSubList: HTMLOListElement | null = null;
+
+    for (const heading of headings) {
+      // 确保标题有 id
+      if (!heading.id) {
+        heading.id =
+          heading.textContent?.trim().replace(/\s+/g, "-").toLowerCase() || "";
+      }
+
+      const link = document.createElement("a");
+      link.href = `#${heading.id}`;
+      link.textContent = heading.textContent?.trim() || "";
+      link.addEventListener("click", (e) => {
+        e.preventDefault();
+        heading.scrollIntoView({ behavior: "smooth" });
+        history.replaceState(null, "", `#${heading.id}`);
+      });
+
+      const li = document.createElement("li");
+      li.appendChild(link);
+
+      if (heading.tagName === "H2") {
+        currentH2Item = li;
+        currentSubList = null;
+        tocList.appendChild(li);
+      } else if (heading.tagName === "H3") {
+        if (!currentSubList) {
+          currentSubList = document.createElement("ol");
+          if (currentH2Item) {
+            currentH2Item.appendChild(currentSubList);
+          } else {
+            tocList.appendChild(li);
+            continue;
+          }
+        }
+        currentSubList.appendChild(li);
+      }
+    }
+  }
+
+  buildToc();
+</script>
