@@ -30,32 +30,24 @@ const { class: className = "" } = Astro.props;
       class="absolute right-0 top-full mt-2 w-88 bg-base-100 border border-base-300 rounded-box shadow-xl z-50 hidden overflow-hidden"
       data-search-results
     >
-      <!-- 分类筛选 -->
+      <!-- 头部栏 -->
       <div
-        class="flex items-center gap-1 px-3 pt-3 pb-2 border-b border-base-200"
+        class="flex items-center justify-between px-3 py-2 border-b border-base-200"
+        data-search-header
       >
-        <button
-          class="badge badge-primary badge-sm cursor-pointer"
-          data-filter="all">全部</button
+        <span class="text-xs font-medium text-base-content/60" data-search-count
+          >0 个结果</span
         >
         <button
-          class="badge badge-outline badge-sm cursor-pointer"
-          data-filter="blog">文章</button
+          class="btn btn-ghost btn-xs text-base-content/60 hover:bg-base-200"
         >
-        <button
-          class="badge badge-outline badge-sm cursor-pointer"
-          data-filter="moment">动态</button
-        >
+          <Icon name="ri:filter-3-line" class="w-3 h-3" />
+          <span>筛选</span>
+        </button>
       </div>
 
       <!-- 结果列表 -->
       <ul class="menu menu-sm p-2 max-h-80 overflow-y-auto" data-search-list>
-        <li
-          class="px-3 py-6 text-center text-base-content/40 text-sm"
-          data-search-empty
-        >
-          输入关键词开始搜索
-        </li>
       </ul>
     </div>
   </div>
@@ -68,7 +60,7 @@ const { class: className = "" } = Astro.props;
     private input: HTMLInputElement;
     private panel: HTMLElement;
     private list: HTMLElement;
-    private filterBtns: NodeListOf<HTMLElement>;
+    private countSpan: HTMLElement;
     private debounceTimer: ReturnType<typeof setTimeout> | null = null;
     private currentFilter: SearchFilter = "all";
 
@@ -77,19 +69,29 @@ const { class: className = "" } = Astro.props;
       this.input = this.querySelector("[data-search-input]")!;
       this.panel = this.querySelector("[data-search-results]")!;
       this.list = this.querySelector("[data-search-list]")!;
-      this.filterBtns = this.querySelectorAll("[data-filter]");
+      this.countSpan = this.querySelector("[data-search-count]")!;
     }
 
     connectedCallback() {
       // 输入事件 — 带 300ms 防抖
       this.input.addEventListener("input", () => {
         if (this.debounceTimer) clearTimeout(this.debounceTimer);
+
+        const query = this.input.value.trim();
+        if (query.length > 1) {
+          this.panel.classList.remove("hidden");
+        } else {
+          this.panel.classList.add("hidden");
+        }
+
         this.debounceTimer = setTimeout(() => this.doSearch(), 300);
       });
 
       // 聚焦时展开面板
       this.input.addEventListener("focus", () => {
-        this.panel.classList.remove("hidden");
+        if (this.input.value.trim().length > 1) {
+          this.panel.classList.remove("hidden");
+        }
       });
 
       // 点击外部关闭
@@ -98,44 +100,26 @@ const { class: className = "" } = Astro.props;
           this.panel.classList.add("hidden");
         }
       });
-
-      // 分类筛选按钮
-      for (const btn of this.filterBtns) {
-        btn.addEventListener("click", () => {
-          this.currentFilter = btn.dataset.filter as SearchFilter;
-          this.updateFilterUI();
-          this.doSearch();
-        });
-      }
-    }
-
-    private updateFilterUI() {
-      for (const btn of this.filterBtns) {
-        if (btn.dataset.filter === this.currentFilter) {
-          btn.classList.add("badge-primary");
-          btn.classList.remove("badge-outline");
-        } else {
-          btn.classList.remove("badge-primary");
-          btn.classList.add("badge-outline");
-        }
-      }
     }
 
     private async doSearch() {
       const query = this.input.value.trim();
-      if (!query) {
+      if (query.length < 2) {
         this.list.innerHTML = "";
-        this.list.appendChild(this.createEmpty("输入关键词开始搜索"));
+        this.countSpan.textContent = "0 个结果";
         return;
       }
 
       // 搜索中提示
       this.list.innerHTML = "";
+      this.countSpan.textContent = "搜索中...";
       this.list.appendChild(this.createEmpty("搜索中..."));
 
       const results = await search(query, this.currentFilter);
 
       this.list.innerHTML = "";
+      this.countSpan.textContent = `${results.length} 个结果`;
+
       if (results.length === 0) {
         this.list.appendChild(this.createEmpty("未找到相关结果"));
         return;
