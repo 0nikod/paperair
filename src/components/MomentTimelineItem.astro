@@ -62,6 +62,8 @@ const momentUrl = `/moments/${year}/${month}/${day}/${moment.id.replace(
     aria-hidden="true"
   >
   </div>
+  <span data-pagefind-filter={`year:${year}`} class="hidden"></span>
+  <span data-pagefind-filter={`month:${year}-${month}`} class="hidden"></span>
 
   {/* Card Content */}
   <moment-expandable class="grow pb-10">
@@ -120,79 +122,96 @@ const momentUrl = `/moments/${year}/${month}/${day}/${moment.id.replace(
 
   <script>
     class MomentExpandable extends HTMLElement {
+      private container: HTMLElement;
+      private expandBtn: HTMLButtonElement;
+      private gradientCover: HTMLElement;
+      private isExpanded = false;
+      private readonly MAX_HEIGHT = 300;
+
       constructor() {
         super();
-        const container = this.querySelector(
+        this.container = this.querySelector(
           "[data-content-container]"
         ) as HTMLElement;
-        const expandBtn = this.querySelector(
+        this.expandBtn = this.querySelector(
           "[data-expand-btn]"
         ) as HTMLButtonElement;
-        const gradientCover = this.querySelector(
+        this.gradientCover = this.querySelector(
           "[data-gradient-cover]"
         ) as HTMLElement;
 
-        const MAX_HEIGHT = 300; // pixels
-        let isExpanded = false;
+        // 绑定方法
+        this.checkHeight = this.checkHeight.bind(this);
+        this.toggleExpand = this.toggleExpand.bind(this);
+      }
 
-        // Check height after images or fonts load
-        const checkHeight = () => {
-          // Reset max-height momentarily to measure true height
-          container.style.maxHeight = "none";
-          const trueHeight = container.scrollHeight;
-
-          if (trueHeight > MAX_HEIGHT * 1.2) {
-            // Add 20% slack so we don't truncate just for a few pixels
-            if (!isExpanded) {
-              container.style.maxHeight = `${MAX_HEIGHT}px`;
-              expandBtn.classList.remove("hidden");
-              gradientCover.classList.remove("hidden");
-            }
-          } else {
-            container.style.maxHeight = "none";
-            expandBtn.classList.add("hidden");
-            gradientCover.classList.add("hidden");
-          }
-        };
-
+      connectedCallback() {
         // Initial check
-        checkHeight();
+        this.checkHeight();
 
         // Listen for window resize
-        window.addEventListener("resize", checkHeight);
+        window.addEventListener("resize", this.checkHeight);
 
         // Handle button click
-        if (expandBtn) {
-          expandBtn.addEventListener("click", () => {
-            isExpanded = !isExpanded;
-            if (isExpanded) {
-              container.style.maxHeight = "none";
-              gradientCover.classList.add("hidden");
-              expandBtn.innerHTML = `收起 <span class="i-ri-arrow-up-s-line w-4 h-4"></span>`;
-            } else {
-              container.style.maxHeight = `${MAX_HEIGHT}px`;
-              gradientCover.classList.remove("hidden");
-              expandBtn.innerHTML = `展开全文 <span class="i-ri-arrow-down-s-line w-4 h-4"></span>`;
-
-              // Scroll back up if needed, so user doesn't lose context
-              const rect = this.getBoundingClientRect();
-              if (rect.top < 0) {
-                window.scrollBy({
-                  top: rect.top - 100, // 100px offset for header
-                  behavior: "smooth",
-                });
-              }
-            }
-          });
+        if (this.expandBtn) {
+          this.expandBtn.addEventListener("click", this.toggleExpand);
         }
 
         // Also observe images loading within this component to re-check height
         const images = this.querySelectorAll("img");
         images.forEach((img) => {
           if (!img.complete) {
-            img.addEventListener("load", checkHeight);
+            img.addEventListener("load", this.checkHeight);
           }
         });
+      }
+
+      disconnectedCallback() {
+        // 关键优化：清理全局监听器防止内存泄漏
+        window.removeEventListener("resize", this.checkHeight);
+        if (this.expandBtn) {
+          this.expandBtn.removeEventListener("click", this.toggleExpand);
+        }
+      }
+
+      private checkHeight() {
+        // Reset max-height momentarily to measure true height
+        this.container.style.maxHeight = "none";
+        const trueHeight = this.container.scrollHeight;
+
+        if (trueHeight > this.MAX_HEIGHT * 1.2) {
+          // Add 20% slack so we don't truncate just for a few pixels
+          if (!this.isExpanded) {
+            this.container.style.maxHeight = `${this.MAX_HEIGHT}px`;
+            this.expandBtn.classList.remove("hidden");
+            this.gradientCover.classList.remove("hidden");
+          }
+        } else {
+          this.container.style.maxHeight = "none";
+          this.expandBtn.classList.add("hidden");
+          this.gradientCover.classList.add("hidden");
+        }
+      }
+
+      private toggleExpand() {
+        this.isExpanded = !this.isExpanded;
+        if (this.isExpanded) {
+          this.container.style.maxHeight = "none";
+          this.gradientCover.classList.add("hidden");
+          this.expandBtn.innerHTML = `收起 <span class="i-ri-arrow-up-s-line w-4 h-4"></span>`;
+        } else {
+          this.container.style.maxHeight = `${this.MAX_HEIGHT}px`;
+          this.gradientCover.classList.remove("hidden");
+          this.expandBtn.innerHTML = `展开全文 <span class="i-ri-arrow-down-s-line w-4 h-4"></span>`;
+
+          const rect = this.getBoundingClientRect();
+          if (rect.top < 0) {
+            window.scrollBy({
+              top: rect.top - 100, // 100px offset for header
+              behavior: "smooth",
+            });
+          }
+        }
       }
     }
 

@@ -90,20 +90,27 @@ const { class: className = "" } = Astro.props;
               </div>
             </div>
 
-            <!-- TODO: 预留日期筛选 -->
-            <div>
+            <!-- 时间筛选 (年月) -->
+            <div class="mb-2">
               <h4
-                class="text-xs font-semibold text-base-content/50 uppercase tracking-wider mb-2"
+                class="text-xs font-semibold text-base-content/50 uppercase tracking-wider mb-2 flex justify-between items-center"
               >
-                时间 (即将推出)
+                <span>时间</span>
+                <button
+                  type="button"
+                  class="btn btn-ghost btn-xs text-base-content/50 hover:text-error px-1 hidden"
+                  data-filter-time-clear
+                  title="清除时间筛选"
+                >
+                  清除
+                </button>
               </h4>
-              <select
-                class="select select-bordered select-xs w-full opacity-50 pointer-events-none"
-              >
-                <option disabled selected>选择年份</option>
-                <option>2024</option>
-                <option>2023</option>
-              </select>
+              <input
+                type="month"
+                class="input input-bordered input-xs w-full text-base-content/80"
+                data-filter-time
+                lang="zh-CN"
+              />
             </div>
           </div>
         </div>
@@ -125,8 +132,11 @@ const { class: className = "" } = Astro.props;
     private list: HTMLElement;
     private countSpan: HTMLElement;
     private filterBtns: NodeListOf<HTMLElement>;
+    private timeInput: HTMLInputElement;
+    private timeClearBtn: HTMLButtonElement;
     private debounceTimer: ReturnType<typeof setTimeout> | null = null;
     private currentFilter: SearchFilter = "all";
+    private currentTime: string = ""; // Format: "YYYY-MM" or ""
 
     constructor() {
       super();
@@ -135,6 +145,11 @@ const { class: className = "" } = Astro.props;
       this.list = this.querySelector("[data-search-list]")!;
       this.countSpan = this.querySelector("[data-search-count]")!;
       this.filterBtns = this.querySelectorAll("[data-filter]");
+      this.timeInput = this.querySelector("[data-filter-time]")!;
+      this.timeClearBtn = this.querySelector("[data-filter-time-clear]")!;
+
+      // 绑定方法，以便可以由 removeEventListener 卸载
+      this.handleDocumentClick = this.handleDocumentClick.bind(this);
     }
 
     connectedCallback() {
@@ -160,11 +175,7 @@ const { class: className = "" } = Astro.props;
       });
 
       // 点击外部关闭
-      document.addEventListener("click", (e) => {
-        if (!this.contains(e.target as Node)) {
-          this.panel.classList.add("hidden");
-        }
-      });
+      document.addEventListener("click", this.handleDocumentClick);
 
       // 分类筛选按钮
       for (const btn of this.filterBtns) {
@@ -178,6 +189,40 @@ const { class: className = "" } = Astro.props;
             (document.activeElement as HTMLElement).blur();
           }
         });
+      }
+
+      // 原生月份选择器
+      if (this.timeInput) {
+        this.timeInput.addEventListener("change", () => {
+          this.currentTime = this.timeInput.value; // ex: "2024-03"
+          if (this.currentTime) {
+            this.timeClearBtn.classList.remove("hidden");
+          } else {
+            this.timeClearBtn.classList.add("hidden");
+          }
+          this.doSearch();
+        });
+      }
+
+      // 清除时间按钮
+      if (this.timeClearBtn) {
+        this.timeClearBtn.addEventListener("click", () => {
+          this.timeInput.value = "";
+          this.currentTime = "";
+          this.timeClearBtn.classList.add("hidden");
+          this.doSearch();
+        });
+      }
+    }
+
+    disconnectedCallback() {
+      // 防止内存泄漏，移除挂载在全局 document 上的事件监听
+      document.removeEventListener("click", this.handleDocumentClick);
+    }
+
+    private handleDocumentClick(e: MouseEvent) {
+      if (!this.contains(e.target as Node)) {
+        this.panel.classList.add("hidden");
       }
     }
 
@@ -201,12 +246,20 @@ const { class: className = "" } = Astro.props;
         return;
       }
 
-      // 搜索中提示
-      this.list.innerHTML = "";
-      this.countSpan.textContent = "搜索中...";
-      this.list.appendChild(this.createEmpty("搜索中..."));
+      // 解析 YYYY-MM
+      let yearParam = "all";
+      let monthParam = "all";
+      if (this.currentTime) {
+        yearParam = this.currentTime.substring(0, 4);
+        monthParam = this.currentTime;
+      }
 
-      const results = await search(query, this.currentFilter);
+      const results = await search(
+        query,
+        this.currentFilter,
+        yearParam,
+        monthParam
+      );
 
       this.list.innerHTML = "";
       this.countSpan.textContent = `${results.length} 个结果`;

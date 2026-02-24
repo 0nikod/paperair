@@ -116,6 +116,16 @@ const toc = headings
           >
             <slot />
             <span data-pagefind-filter="type:blog" class="hidden"></span>
+            <span
+              data-pagefind-filter={`year:${pubDate.getFullYear()}`}
+              class="hidden"></span>
+            <span
+              data-pagefind-filter={`month:${pubDate.getFullYear()}-${(
+                pubDate.getMonth() + 1
+              )
+                .toString()
+                .padStart(2, "0")}`}
+              class="hidden"></span>
           </div>
         </div>
       </article>
