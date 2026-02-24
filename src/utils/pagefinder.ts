@@ -57,12 +57,15 @@ async function init(): Promise<PagefindInstance> {
  *
  * @param query   - 搜索关键词
  * @param filter  - 内容类型过滤："all" | "blog" | "moment"
+ * @param month   - 可选，月份过滤，例如 "2024-03" (需要和上面 year 对应，或者单独传)
  * @param limit   - 返回的最大结果数量，默认为 8
  * @returns 最多 limit 条 SearchResult
  */
 export async function search(
   query: string,
   filter: SearchFilter = "all",
+  year: string = "all",
+  month: string = "all",
   limit: number = 8,
 ): Promise<SearchResult[]> {
   if (!query.trim()) return [];
@@ -70,8 +73,17 @@ export async function search(
   const pf = await init();
 
   const options: { filters?: Record<string, string> } = {};
-  if (filter !== "all") {
-    options.filters = { type: filter };
+  if (filter !== "all" || year !== "all" || month !== "all") {
+    options.filters = {};
+    if (filter !== "all") {
+      options.filters.type = filter;
+    }
+    if (year !== "all") {
+      options.filters.year = year;
+    }
+    if (month !== "all") {
+      options.filters.month = month;
+    }
   }
 
   const { results } = await pf.search(query, options);
