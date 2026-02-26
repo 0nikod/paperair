@@ -1,5 +1,6 @@
 ---
 import { getCollection, render } from "astro:content";
+import ClientDate from "@components/ClientDate.astro";
 import ImageGrid from "@components/ImageGrid.astro";
 import BaseLayout from "@layouts/BaseLayout.astro";
 import { Icon } from "astro-icon/components";
@@ -29,10 +30,6 @@ const date = moment.data.pubDate;
 const year = date.getFullYear().toString();
 const month = (date.getMonth() + 1).toString().padStart(2, "0");
 const day = date.getDate().toString().padStart(2, "0");
-const time = date.toLocaleTimeString("zh-CN", {
-  hour: "2-digit",
-  minute: "2-digit",
-});
 
 const title = `动态记录 - ${year}-${month}-${day} - PaperAir`;
 const description = `${(moment.body || "").slice(0, 100)}...`;
@@ -58,10 +55,10 @@ const description = `${(moment.body || "").slice(0, 100)}...`;
           <span class="text-sm leading-none">{day}</span>
         </div>
         <div>
-          <div class="font-medium">{year}年{month}月{day}日</div>
+          <ClientDate date={date} format="date" class="font-medium" />
           <div class="text-sm text-base-content/50 flex items-center gap-1">
             <Icon name="ri:time-line" class="w-3.5 h-3.5" />
-            {time}
+            <ClientDate date={date} format="time" />
           </div>
         </div>
       </div>

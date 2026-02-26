@@ -1,0 +1,78 @@
+---
+import { TIMEZONE } from "@/settings/consts";
+
+interface Props {
+  date: Date;
+  format?: "date" | "datetime" | "time";
+  class?: string;
+  [key: string]: unknown;
+}
+
+const { date, format = "date", class: className, ...rest } = Astro.props;
+
+// Server-side fallback: format using the configured TIMEZONE
+const dateOptions: Intl.DateTimeFormatOptions = {
+  year: "numeric",
+  month: "short",
+  day: "numeric",
+  timeZone: TIMEZONE,
+};
+const timeOptions: Intl.DateTimeFormatOptions = {
+  hour: "2-digit",
+  minute: "2-digit",
+  timeZone: TIMEZONE,
+};
+const dateTimeOptions: Intl.DateTimeFormatOptions = {
+  ...dateOptions,
+  ...timeOptions,
+};
+
+const optionsMap = {
+  date: dateOptions,
+  time: timeOptions,
+  datetime: dateTimeOptions,
+};
+const fallbackText = date.toLocaleString("zh-CN", optionsMap[format]);
+---
+
+<client-date data-format={format} class={className} {...rest}>
+  <time datetime={date.toISOString()}>{fallbackText}</time>
+</client-date>
+
+<script>
+  class ClientDateElement extends HTMLElement {
+    connectedCallback() {
+      const timeEl = this.querySelector("time");
+      if (!timeEl) return;
+
+      const iso = timeEl.getAttribute("datetime");
+      if (!iso) return;
+
+      const date = new Date(iso);
+      const format = this.dataset.format || "date";
+
+      const dateOpts: Intl.DateTimeFormatOptions = {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      };
+      const timeOpts: Intl.DateTimeFormatOptions = {
+        hour: "2-digit",
+        minute: "2-digit",
+      };
+
+      let opts: Intl.DateTimeFormatOptions;
+      if (format === "time") {
+        opts = timeOpts;
+      } else if (format === "datetime") {
+        opts = { ...dateOpts, ...timeOpts };
+      } else {
+        opts = dateOpts;
+      }
+
+      timeEl.textContent = date.toLocaleString("zh-CN", opts);
+    }
+  }
+
+  customElements.define("client-date", ClientDateElement);
+</script>

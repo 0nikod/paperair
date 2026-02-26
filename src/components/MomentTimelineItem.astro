@@ -2,6 +2,7 @@
 import type { CollectionEntry } from "astro:content";
 import { render } from "astro:content";
 import { Icon } from "astro-icon/components";
+import ClientDate from "./ClientDate.astro";
 import ImageGrid from "./ImageGrid.astro";
 
 interface Props {
@@ -23,10 +24,6 @@ const date = moment.data.pubDate;
 const year = date.getFullYear().toString();
 const month = (date.getMonth() + 1).toString().padStart(2, "0");
 const day = date.getDate().toString().padStart(2, "0");
-const time = date.toLocaleTimeString("zh-CN", {
-  hour: "2-digit",
-  minute: "2-digit",
-});
 
 // A unique URL for this moment
 const momentUrl = `/moments/${year}/${month}/${day}/${moment.id.replace(
@@ -48,12 +45,16 @@ const momentUrl = `/moments/${year}/${month}/${day}/${moment.id.replace(
 
   {/* Date & Time Column */}
   <div class="w-20 md:w-32 shrink-0 flex flex-col items-end pt-1">
-    <time datetime={date.toISOString()} class="flex flex-col items-end">
+    <div class="flex flex-col items-end">
       <div class="text-sm md:text-base font-bold text-base-content/80">
         {showYear ? `${year}-${month}-${day}` : `${month}-${day}`}
       </div>
-      <div class="text-xs text-base-content/50">{time}</div>
-    </time>
+      <ClientDate
+        date={date}
+        format="time"
+        class="text-xs text-base-content/50"
+      />
+    </div>
   </div>
 
   {/* Timeline Dot */}

@@ -1,11 +1,10 @@
 ---
 import { Image } from "astro:assets";
 import type { CollectionEntry } from "astro:content";
+import ClientDate from "@components/ClientDate.astro";
 import TableOfContents from "@components/TableOfContents.astro";
 import BaseLayout from "@layouts/BaseLayout.astro";
-
 import type { MarkdownHeading } from "astro";
-import { TIMEZONE } from "@/settings/consts";
 
 interface Props {
   post: CollectionEntry<"blog">;
@@ -15,20 +14,6 @@ interface Props {
 
 const { post, headings, readingTime } = Astro.props;
 const { title, description, pubDate, updatedDate, heroImage } = post.data;
-
-const formattedPubDate = pubDate.toLocaleDateString("zh-CN", {
-  year: "numeric",
-  month: "long",
-  day: "numeric",
-  timeZone: TIMEZONE,
-});
-
-const formattedUpdatedDate = updatedDate?.toLocaleDateString("zh-CN", {
-  year: "numeric",
-  month: "long",
-  day: "numeric",
-  timeZone: TIMEZONE,
-});
 
 // 处理 TOC 层级关系
 const toc = headings
@@ -95,12 +80,12 @@ const toc = headings
             <div
               class="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-base-content/50"
             >
-              <time datetime={pubDate.toISOString()}>
-                {formattedPubDate}
-              </time>
+              <ClientDate date={pubDate} format="date" />
               {
-                formattedUpdatedDate && (
-                  <span>(更新于 {formattedUpdatedDate})</span>
+                updatedDate && (
+                  <span>
+                    (更新于 <ClientDate date={updatedDate} format="date" />)
+                  </span>
                 )
               }
               <span class="reading-time">约 {readingTime} 分钟阅读</span>
