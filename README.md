@@ -102,6 +102,7 @@ pnpm dev
 | `pnpm check` | 运行 Astro 类型检查 + Biome 代码检查 |
 | `pnpm check:astro` | 仅运行 Astro 类型检查 |
 | `pnpm check:biome` | 仅运行 Biome 代码检查 |
+| `pnpm sync-content` | 同步内容仓库（submodule）并生成 CMS 配置 |
 
 ## 自定义配置
 
@@ -115,7 +116,39 @@ pnpm dev
 
 ### CMS
 
-Decap CMS 配置位于 `public/admin/config.yml`。默认使用 GitHub 后端，需要将 `repo` 字段修改为你自己的仓库地址。
+Decap CMS 配置模板位于 `public/admin/config.template.yml`。每次 `dev` / `build` 前会由 `sync-content` 脚本自动生成 `public/admin/config.yml`，无需手动编辑。
+
+当启用外部内容仓库时，CMS 的 `backend.repo` 会自动指向内容仓库；未启用时指向主仓库。
+
+### 内容仓库拆分
+
+项目支持将 `src/content` 拆分到独立 Git 仓库，通过 git submodule 可选引入。
+
+编辑 `consts.ts` 中的 `CONTENT_REPO` 配置：
+
+```ts
+export const CONTENT_REPO = {
+  enabled: true,
+  url: "https://github.com/you/paperair-content.git",
+  repo: "you/paperair-content",
+  branch: "main",
+};
+```
+
+| 字段 | 说明 |
+| :--- | :--- |
+| `enabled` | 是否启用外部内容仓库，默认 `false` |
+| `url` | submodule 远端 URL |
+| `repo` | Decap CMS 使用的 `owner/repo` 格式 |
+| `branch` | 内容仓库分支名 |
+
+**启用步骤**：
+
+1. 在 Git 托管平台创建内容仓库，将 `blog/` 和 `moments/` 推送到仓库根目录
+2. 在 `consts.ts` 中填入仓库信息并设置 `enabled: true`
+3. 运行 `pnpm sync-content`，脚本会自动添加 submodule 并生成 CMS 配置
+
+**不启用时**：`src/content` 作为普通目录保留在主仓库中，行为与拆分前完全一致。
 
 ## 许可证
 
