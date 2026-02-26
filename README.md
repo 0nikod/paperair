@@ -1,46 +1,122 @@
-# Astro Starter Kit: Basics
+# PaperAir
 
-```sh
-pnpm create astro@latest -- --template basics
-```
+一个基于 [Astro](https://astro.build/) 构建的个人博客与动态站点模板。
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## 功能特性
 
-## 🚀 Project Structure
+- **博客系统** -- 支持 Markdown 撰写，含标题、描述、封面图、标签、分类、草稿等丰富 Frontmatter 字段
+- **动态 (Moments)** -- 类似微博/说说的短内容发布，支持图片组，按年月归档并以时间线方式展示
+- **全文搜索** -- 集成 [Pagefind](https://pagefind.app/)，实现静态站点客户端搜索
+- **深/浅色主题切换** -- 基于 DaisyUI 主题系统，支持用户手动切换并持久化偏好
+- **CMS 管理** -- 集成 [Decap CMS](https://decapcms.org/)，通过 Web UI 管理博客文章和动态内容
+- **RSS 订阅** -- 自动生成 RSS Feed (`/rss.xml`)
+- **Sitemap** -- 自动生成站点地图，利于搜索引擎收录
+- **SEO 友好** -- 语义化 HTML 标签、meta 信息、robots.txt 等
+- **响应式布局** -- 适配桌面端与移动端
 
-Inside of your Astro project, you'll see the following folders and files:
+## 技术栈
+
+| 类别 | 技术 |
+| :--- | :--- |
+| 框架 | [Astro](https://astro.build/) 5 |
+| 样式 | [Tailwind CSS](https://tailwindcss.com/) 4 + [DaisyUI](https://daisyui.com/) 5 |
+| 排版 | [@tailwindcss/typography](https://github.com/tailwindlabs/tailwindcss-typography) |
+| 图标 | [astro-icon](https://github.com/natemoo-re/astro-icon) + [Remix Icon](https://remixicon.com/) |
+| 搜索 | [Pagefind](https://pagefind.app/) |
+| CMS | [Decap CMS](https://decapcms.org/) |
+| 代码质量 | [Biome](https://biomejs.dev/) (Linter + Formatter) |
+| Git Hooks | [Husky](https://typicode.github.io/husky/) + [lint-staged](https://github.com/lint-staged/lint-staged) |
+| CI | GitHub Actions |
+| 包管理 | [pnpm](https://pnpm.io/) |
+| 语言 | TypeScript (strict) |
+
+## 项目结构
 
 ```text
 /
 ├── public/
+│   ├── admin/            # Decap CMS 配置
+│   ├── favicon.ico
 │   └── favicon.svg
-├── src
-│   ├── assets
-│   │   └── astro.svg
-│   ├── components
-│   │   └── Welcome.astro
-│   ├── layouts
-│   │   └── Layout.astro
-│   └── pages
-│       └── index.astro
+├── src/
+│   ├── assets/           # 图片等静态资源
+│   ├── components/       # Astro 组件
+│   │   ├── ArticleCard       # 文章卡片
+│   │   ├── MomentTimelineItem # 动态时间线条目
+│   │   ├── MomentsFilter      # 动态归档筛选器
+│   │   ├── Navbar / NavLinks  # 导航栏
+│   │   ├── SearchBar          # 搜索栏
+│   │   ├── ThemeToggle        # 主题切换
+│   │   └── ...
+│   ├── content/          # 内容集合 (Markdown)
+│   │   ├── blog/             # 博客文章
+│   │   └── moments/          # 动态
+│   ├── layouts/          # 页面布局
+│   │   ├── BaseLayout        # 全局基础布局
+│   │   ├── BlogLayout        # 文章详情布局
+│   │   └── MomentsIndexLayout # 动态列表布局
+│   ├── pages/            # 路由页面
+│   │   ├── index.astro       # 首页
+│   │   ├── blog/             # 博客列表与详情
+│   │   ├── moments/          # 动态列表 (按年/月归档)
+│   │   ├── rss.xml.ts        # RSS Feed
+│   │   └── robots.txt.ts     # robots.txt
+│   ├── settings/         # 站点配置 (页脚社交链接等)
+│   ├── styles/           # 全局样式
+│   └── utils/            # 工具函数 (内容查询, Pagefind 封装)
+├── consts.ts             # 全局常量 (站名、导航、时区等)
+├── astro.config.mjs      # Astro 配置
+├── biome.json            # Biome Linter/Formatter 配置
+├── tsconfig.json         # TypeScript 配置 (路径别名)
 └── package.json
 ```
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+## 快速开始
 
-## 🧞 Commands
+### 环境要求
 
-All commands are run from the root of the project, from a terminal:
+- [Node.js](https://nodejs.org/) >= 20
+- [pnpm](https://pnpm.io/) >= 10
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `pnpm install`             | Installs dependencies                            |
-| `pnpm dev`             | Starts local dev server at `localhost:4321`      |
-| `pnpm build`           | Build your production site to `./dist/`          |
-| `pnpm preview`         | Preview your build locally, before deploying     |
-| `pnpm astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `pnpm astro -- --help` | Get help using the Astro CLI                     |
+### 安装与运行
 
-## 👀 Want to learn more?
+```bash
+# 克隆仓库
+git clone https://github.com/0nikod/paperair.git
+cd paperair
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+# 安装依赖
+pnpm install
+
+# 启动开发服务器 (默认 http://localhost:4321)
+pnpm dev
+```
+
+## 常用命令
+
+| 命令 | 说明 |
+| :--- | :--- |
+| `pnpm dev` | 启动本地开发服务器 |
+| `pnpm build` | 构建生产环境产物至 `./dist/` |
+| `pnpm preview` | 本地预览生产构建 |
+| `pnpm check` | 运行 Astro 类型检查 + Biome 代码检查 |
+| `pnpm check:astro` | 仅运行 Astro 类型检查 |
+| `pnpm check:biome` | 仅运行 Biome 代码检查 |
+
+## 自定义配置
+
+### 站点信息
+
+编辑根目录下的 `consts.ts` 来修改站点名称、描述、导航链接和默认时区。
+
+### 页脚与社交链接
+
+编辑 `src/settings/footer.ts` 来配置作者名称和社交媒体链接。
+
+### CMS
+
+Decap CMS 配置位于 `public/admin/config.yml`。默认使用 GitHub 后端，需要将 `repo` 字段修改为你自己的仓库地址。
+
+## 许可证
+
+[GPL-3.0](LICENSE)
