@@ -1,11 +1,20 @@
 ---
+/**
+ * 动态归档筛选侧边栏组件
+ * 按年份和月份对所有动态进行归档聚合。
+ * 提供导航链接，点击可跳转至对应的年月动态列表页。
+ */
 import type { CollectionEntry } from "astro:content";
 import { Icon } from "astro-icon/components";
 
 interface Props {
+  /** 所有动态集合，用于统计归档数量 */
   moments: CollectionEntry<"moments">[];
+  /** 当前选中的年份（用于展示状态和自动展开功能） */
   activeYear?: string | undefined;
+  /** 当前选中的月份 */
   activeMonth?: string | undefined;
+  /** 自定义样式类 */
   class?: string | undefined;
 }
 

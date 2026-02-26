@@ -1,8 +1,15 @@
 ---
+/**
+ * 多图展示网格组件
+ * 根据传入的图片数量自动计算并应用最优的网格布局（支持 1, 2, 3, 4 列）。
+ * 点击图片可跳转至原图链接。
+ */
 import { Image } from "astro:assets";
 
 interface Props {
+  /** 包含图片元数据的数组 */
   images: ImageMetadata[];
+  /** 自定义样式类 */
   class?: string;
 }
 

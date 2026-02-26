@@ -1,9 +1,17 @@
 ---
+/**
+ * 客户端日期渲染组件
+ * 采用自定义元素 (Custom Element) 实现，确保日期在客户端按用户浏览器本地格式显示。
+ * 解决了 SSR 与客户端活化（Hydration）时区不一致导致的文本闪烁或不匹配问题。
+ */
 import { TIMEZONE } from "@/settings/consts";
 
 interface Props {
+  /** 日期对象 */
   date: Date;
+  /** 显示格式: 'date' (日期), 'datetime' (日期时间), 'time' (时间) */
   format?: "date" | "datetime" | "time";
+  /** 自定义样式类 */
   class?: string;
   [key: string]: unknown;
 }

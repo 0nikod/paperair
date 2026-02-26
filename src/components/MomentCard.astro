@@ -1,10 +1,17 @@
 ---
+/**
+ * 动态精简卡片组件
+ * 用于展示单条动态（Moment）的文字摘要和发布时间。
+ * 常用于首页等需要简约展示动态内容的场景。
+ */
 import type { CollectionEntry } from "astro:content";
 import { Icon } from "astro-icon/components";
 import ClientDate from "./ClientDate.astro";
 
 interface Props {
+  /** 动态条目数据 */
   moment: CollectionEntry<"moments">;
+  /** 自定义样式类 */
   class?: string;
 }
 

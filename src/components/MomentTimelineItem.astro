@@ -1,4 +1,9 @@
 ---
+/**
+ * 动态时间轴单项组件
+ * 在时间轴中展示完整的动态内容，包括文字（Markdown 渲染）和图片。
+ * 支持内容超长折叠、展开功能，以及生成动态的单页链接。
+ */
 import type { CollectionEntry } from "astro:content";
 import { render } from "astro:content";
 import { Icon } from "astro-icon/components";
@@ -6,9 +11,13 @@ import ClientDate from "./ClientDate.astro";
 import ImageGrid from "./ImageGrid.astro";
 
 interface Props {
+  /** 动态条目数据 */
   moment: CollectionEntry<"moments">;
+  /** 自定义样式类 */
   class?: string;
-  showYear?: boolean; // Whether to emphasize the year in the date display
+  /** 是否在日期显示中强调年份 */
+  showYear?: boolean;
+  /** 是否为时间轴的最后一项（用于控制垂直延伸线的显示） */
   isLast?: boolean;
 }
 

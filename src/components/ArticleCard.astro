@@ -1,11 +1,19 @@
 ---
+/**
+ * 文章卡片组件
+ * 用于在博客列表展示文章摘要、元数据（日期、字数、分类等）。
+ * 支持两种布局模式：'card' (网格卡片) 和 'list' (列表项)。
+ */
 import type { CollectionEntry } from "astro:content";
 import { Icon } from "astro-icon/components";
 import ClientDate from "./ClientDate.astro";
 
 interface Props {
+  /** 博客文章条目数据 */
   post: CollectionEntry<"blog">;
+  /** 展示布局模式: 'card' (网格卡片) 或 'list' (列表项) */
   layout?: "card" | "list";
+  /** 自定义样式类 */
   class?: string;
 }
 

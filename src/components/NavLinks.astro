@@ -1,8 +1,15 @@
 ---
+/**
+ * 导航链接项渲染组件
+ * 封装了导航菜单的渲染逻辑，支持桌面端（横格）和移动端（纵列）布局。
+ * 自动根据当前路径（currentPath）判断并应用活动状态（Active）的高亮样式。
+ */
 import { NAV_LINKS } from "@consts";
 
 interface Props {
+  /** 当前页面的路径 */
   currentPath: string;
+  /** 是否使用移动端布局样式 */
   isMobile?: boolean;
 }
 

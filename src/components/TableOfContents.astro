@@ -1,7 +1,13 @@
 ---
+/**
+ * 文章目录 (TOC) 组件
+ * 根据 Markdown 渲染生成的标题数据自动构建两级嵌套的目录索引。
+ * 具备自动编号功能（通过 CSS 计数器实现）。
+ */
 import type { MarkdownHeading } from "astro";
 
 interface Props {
+  /** 包含标题文本、链接（slug）及嵌套子标题的数组 */
   toc: (MarkdownHeading & { subHeadings: MarkdownHeading[] })[];
 }
 
