@@ -7,4 +7,4 @@ export const NAV_LINKS = [
   { href: "/moments", text: "动态" },
 ];
 
-export const TIMEZONE = "Asia/Shanghai";
+export const TIMEZONE = "Asia/Shanghai"; // 默认的发布时区
