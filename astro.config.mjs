@@ -6,13 +6,15 @@ import { defineConfig, fontProviders } from "astro/config";
 import icon from "astro-icon";
 import pagefind from "astro-pagefind";
 
+import sitemap from "@astrojs/sitemap";
+
 // https://astro.build/config
 export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
   },
 
-  integrations: [icon(), pagefind()],
+  integrations: [icon(), pagefind(), sitemap()],
 
   experimental: {
     fonts: [
