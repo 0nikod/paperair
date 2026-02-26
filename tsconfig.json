@@ -10,7 +10,7 @@
       "@layouts/*": ["src/layouts/*"],
       "@styles/*": ["src/styles/*"],
       "@assets/*": ["src/assets/*"],
-      "@consts": ["src/settings/consts.ts"],
+      "@consts": ["consts.ts"],
       "@utils/*": ["src/utils/*"],
       "@settings/*": ["src/settings/*"]
     }

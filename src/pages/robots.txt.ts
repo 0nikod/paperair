@@ -1,4 +1,4 @@
-import { SITE_URL } from "@settings/consts";
+import { SITE_URL } from "@consts";
 import type { APIRoute } from "astro";
 
 const getRobotsTxt = (sitemapURL: string) => `User-agent: *
