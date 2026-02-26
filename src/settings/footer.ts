@@ -17,5 +17,10 @@ export const footerConfig: FooterConfig = {
       icon: "ri:github-fill",
       url: "https://github.com",
     },
+    {
+      ariaLabel: "RSS Feed",
+      icon: "ri:rss-fill",
+      url: "/rss.xml",
+    },
   ],
 };
