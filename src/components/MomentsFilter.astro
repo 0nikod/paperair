@@ -70,7 +70,7 @@ const archives = Array.from(archiveMap.entries())
                     ? "active font-bold"
                     : "font-medium",
                 ]}
-                onclick="event.stopPropagation();"
+                data-stop-propagation
               >
                 {archive.year} 年
               </a>
@@ -103,3 +103,13 @@ const archives = Array.from(archiveMap.entries())
     }
   </ul>
 </div>
+
+<script>
+  // 处理需要阻止冒泡的元素（如归档年份链接，防止点击时触发 details 的切换）
+  const stopElements = document.querySelectorAll("[data-stop-propagation]");
+  stopElements.forEach((el) => {
+    el.addEventListener("click", (e) => {
+      e.stopPropagation();
+    });
+  });
+</script>
