@@ -1,0 +1,45 @@
+# ---- 后端配置 ----
+backend:
+  name: github
+  repo: __CONTENT_REPO__
+  branch: __CONTENT_BRANCH__
+
+# ---- 媒体文件 ----
+media_folder: "src/assets/images"
+public_folder: "src/assets/images"
+
+# ---- 内容集合 ----
+collections:
+  # ===== Blog =====
+  - name: "blog"
+    label: "博客文章"
+    folder: "src/content/blog"
+    create: true
+    slug: "{{slug}}"
+    extension: "md"
+    fields:
+      - { label: "标题",     name: "title",       widget: "string" }
+      - { label: "描述",     name: "description", widget: "string", required: false }
+      - { label: "发布日期", name: "pubDate",     widget: "datetime", format: "YYYY-MM-DDTHH:mm:ss" }
+      - { label: "更新日期", name: "updatedDate", widget: "datetime", format: "YYYY-MM-DDTHH:mm:ss", required: false }
+      - { label: "标签",     name: "tags",        widget: "list",   default: [] }
+      - { label: "草稿",     name: "draft",       widget: "boolean", default: false }
+      - { label: "封面图",   name: "heroImage",   widget: "image",  required: false }
+      - { label: "分类",     name: "category",    widget: "string", required: false }
+      - { label: "作者",     name: "author",      widget: "string", required: false }
+      - { label: "测试文章", name: "test",        widget: "boolean", default: false }
+      - { label: "正文",     name: "body",        widget: "markdown" }
+
+  # ===== Moments =====
+  - name: "moments"
+    label: "动态"
+    folder: "src/content/moments"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    extension: "md"
+    fields:
+      - { label: "发布日期", name: "pubDate", widget: "datetime", format: "YYYY-MM-DDTHH:mm:ss" }
+      - { label: "测试动态", name: "test",    widget: "boolean",  default: false }
+      - { label: "内容",     name: "body",    widget: "markdown" }
+
+# local_backend: true

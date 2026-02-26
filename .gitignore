@@ -30,3 +30,6 @@ pnpm-debug.log*
 
 # Claude
 .claude/
+
+# Generated CMS config (built from config.template.yml)
+public/admin/config.yml
