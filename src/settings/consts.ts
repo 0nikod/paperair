@@ -8,3 +8,4 @@ export const NAV_LINKS = [
 ];
 
 export const TIMEZONE = "Asia/Shanghai"; // 默认的发布时区
+export const SITE_URL = "https://example.com";
