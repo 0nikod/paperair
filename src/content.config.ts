@@ -1,6 +1,6 @@
 import { defineCollection, z } from "astro:content";
+import { TIMEZONE } from "@consts";
 import { glob } from "astro/loaders";
-import { TIMEZONE } from "./settings/consts";
 
 /**
  * 根据 IANA 时区名称获取 UTC 偏移字符串（如 "+08:00"）。
