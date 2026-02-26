@@ -1,5 +1,6 @@
 ---
 import "@styles/global.css";
+import { Font } from "astro:assets";
 import Footer from "@components/Footer.astro";
 import Navbar from "@components/Navbar.astro";
 
@@ -42,6 +43,12 @@ const {
 		<meta property="og:description" content={description} />
 		<meta property="og:type" content={type} />
 		{image && <meta property="og:image" content={new URL(image, Astro.url)} />}
+		<Font cssVariable="--font-cascadia-code" preload />
+		<style is:global>
+			:root {
+				--font-mono: var(--font-cascadia-code), ui-monospace, monospace;
+			}
+		</style>
 	</head>
 	<body
 		class="min-h-screen flex flex-col font-sans antialiased text-base-content selection:bg-primary/30 bg-base-200"

@@ -1,7 +1,7 @@
 // @ts-check
 
 import tailwindcss from "@tailwindcss/vite";
-import { defineConfig } from "astro/config";
+import { defineConfig, fontProviders } from "astro/config";
 
 import icon from "astro-icon";
 import pagefind from "astro-pagefind";
@@ -13,4 +13,14 @@ export default defineConfig({
   },
 
   integrations: [icon(), pagefind()],
+
+  experimental: {
+    fonts: [
+      {
+        provider: fontProviders.google(),
+        name: "Cascadia Code",
+        cssVariable: "--font-cascadia-code",
+      },
+    ],
+  },
 });
