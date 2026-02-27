@@ -18,15 +18,31 @@ collections:
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     extension: "md"
     fields:
-      - { label: "标题",     name: "title",       widget: "string" }
-      - { label: "描述",     name: "description", widget: "string", required: false }
-      - { label: "发布日期", name: "pubDate",     widget: "datetime", format: "YYYY-MM-DDTHH:mm:ss" }
-      - { label: "更新日期", name: "updatedDate", widget: "datetime", format: "YYYY-MM-DDTHH:mm:ss", required: false }
-      - { label: "标签",     name: "tags",        widget: "list",   default: [] }
-      - { label: "分类",     name: "category",    widget: "string", required: false }
-      - { label: "作者",     name: "author",      widget: "string", required: false }
-      - { label: "封面图",   name: "heroImage",   widget: "image",  required: false }
-      - { label: "正文",     name: "body",        widget: "markdown" }
+      - { label: "标题", name: "title", widget: "string" }
+      - {
+          label: "描述",
+          name: "description",
+          widget: "string",
+          required: false,
+        }
+      - {
+          label: "发布日期",
+          name: "pubDate",
+          widget: "datetime",
+          format: "YYYY-MM-DDTHH:mm:ssZ",
+        }
+      - {
+          label: "更新日期",
+          name: "updatedDate",
+          widget: "datetime",
+          format: "YYYY-MM-DDTHH:mm:ssZ",
+          required: false,
+        }
+      - { label: "标签", name: "tags", widget: "list", default: [] }
+      - { label: "分类", name: "category", widget: "string", required: false }
+      - { label: "作者", name: "author", widget: "string", required: false }
+      - { label: "封面图", name: "heroImage", widget: "image", required: false }
+      - { label: "正文", name: "body", widget: "markdown" }
 
   # ===== Moments =====
   - name: "moments"
@@ -36,9 +52,20 @@ collections:
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     extension: "md"
     fields:
-      - { label: "标题",     name: "title",   widget: "string", required: false }
-      - { label: "发布日期", name: "pubDate", widget: "datetime", format: "YYYY-MM-DDTHH:mm:ss" }
-      - { label: "图片列表", name: "images",  widget: "list",     field: { label: "图片", name: "image", widget: "image" }, required: false }
-      - { label: "正文",     name: "body",    widget: "markdown" }
+      - { label: "标题", name: "title", widget: "string" }
+      - {
+          label: "发布日期",
+          name: "pubDate",
+          widget: "datetime",
+          format: "YYYY-MM-DDTHH:mm:ssZ",
+        }
+      - {
+          label: "图片列表",
+          name: "images",
+          widget: "list",
+          field: { label: "图片", name: "image", widget: "image" },
+          required: false,
+        }
+      - { label: "正文", name: "body", widget: "markdown" }
 
 local_backend: __LOCAL_BACKEND__
