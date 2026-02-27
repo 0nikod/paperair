@@ -37,7 +37,7 @@ const isCard = layout === "card";
 {
   isCard ? (
     <a
-      href={`/blog/${post.id}`}
+      href={`${import.meta.env.BASE_URL}blog/${post.id}`}
       class:list={[
         "card bg-base-100 border border-base-200 shadow-sm hover:shadow-md transition-all duration-300 group h-full",
         className,
@@ -85,7 +85,7 @@ const isCard = layout === "card";
     </a>
   ) : (
     <a
-      href={`/blog/${post.id}`}
+      href={`${import.meta.env.BASE_URL}blog/${post.id}`}
       data-blog-card
       data-category={category || ""}
       data-tags={tags.join(",")}
