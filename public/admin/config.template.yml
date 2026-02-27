@@ -34,9 +34,9 @@ collections:
     folder: "src/content/moments"
     create: true
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
-    summary: "{{year}}-{{month}}-{{day}} | {{body}}"
     extension: "md"
     fields:
+      - { label: "标题",     name: "title",   widget: "string", required: false }
       - { label: "发布日期", name: "pubDate", widget: "datetime", format: "YYYY-MM-DDTHH:mm:ss" }
       - { label: "图片列表", name: "images",  widget: "list",     field: { label: "图片", name: "image", widget: "image" }, required: false }
       - { label: "正文",     name: "body",    widget: "markdown" }

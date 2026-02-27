@@ -77,6 +77,8 @@ const moments = defineCollection({
   loader: glob({ pattern: "**/*.md", base: "./src/content/moments" }),
   schema: ({ image }) =>
     z.object({
+      /** 标题 */
+      title: z.string().optional(),
       /** 发布日期 */
       pubDate: dateField,
       /** 图片列表 */
