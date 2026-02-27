@@ -5,7 +5,7 @@ import tailwindcss from "@tailwindcss/vite";
 import { defineConfig, fontProviders } from "astro/config";
 import icon from "astro-icon";
 import pagefind from "astro-pagefind";
-import { SITE_URL, BASE_PATH } from "./consts";
+import { BASE_PATH, SITE_URL } from "./consts";
 
 // https://astro.build/config
 export default defineConfig({
