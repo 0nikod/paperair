@@ -4,6 +4,7 @@
  * 按标签和分类对博客文章进行归档。
  */
 import type { CollectionEntry } from "astro:content";
+import { resolvePath } from "@utils/path";
 import { Icon } from "astro-icon/components";
 
 interface Props {
@@ -53,7 +54,7 @@ const tags = Array.from(tagsMap.entries())
         <ul class="menu bg-base-200/50 w-full rounded-box p-2">
           <li>
             <a
-              href={`${import.meta.env.BASE_URL}blog`}
+              href={resolvePath("blog")}
               class={!activeTag && !activeCategory ? "active" : ""}
             >
               全部文章
@@ -62,7 +63,7 @@ const tags = Array.from(tagsMap.entries())
           {categories.map((cat) => (
             <li>
               <a
-                href={`${import.meta.env.BASE_URL}blog?category=${cat.name}`}
+                href={resolvePath(`blog?category=${cat.name}`)}
                 class={activeCategory === cat.name ? "active font-bold" : ""}
               >
                 <span class="flex-1 truncate">{cat.name}</span>
@@ -87,7 +88,7 @@ const tags = Array.from(tagsMap.entries())
         <div class="flex flex-wrap gap-2 px-2">
           {tags.map((tag: { name: string; count: number }) => (
             <a
-              href={`${import.meta.env.BASE_URL}blog?tag=${tag.name}`}
+              href={resolvePath(`blog?tag=${tag.name}`)}
               class:list={[
                 "badge badge-lg hover:badge-primary transition-colors py-4 px-4",
                 activeTag === tag.name

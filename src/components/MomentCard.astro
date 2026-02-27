@@ -6,6 +6,7 @@
 import type { CollectionEntry } from "astro:content";
 import { render } from "astro:content";
 import ImageGrid from "@components/ImageGrid.astro";
+import { resolvePath } from "@utils/path";
 import { Icon } from "astro-icon/components";
 
 interface Props {
@@ -24,10 +25,9 @@ const month = (date.getMonth() + 1).toString().padStart(2, "0");
 const day = date.getDate().toString().padStart(2, "0");
 
 // A unique URL for this moment
-const momentUrl = `/moments/${year}/${month}/${day}/${moment.id.replace(
-  /\.[^/.]+$/,
-  "",
-)}/`;
+const momentUrl = resolvePath(
+  `moments/${year}/${month}/${day}/${moment.id.replace(/\.[^/.]+$/, "")}/`,
+);
 ---
 
 <moment-expandable class:list={["block", className]}>

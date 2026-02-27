@@ -5,6 +5,7 @@
  * 提供导航链接，点击可跳转至对应的年月动态列表页。
  */
 import type { CollectionEntry } from "astro:content";
+import { resolvePath } from "@utils/path";
 import { Icon } from "astro-icon/components";
 
 interface Props {
@@ -50,7 +51,10 @@ const archives = Array.from(archiveMap.entries())
   </h2>
   <ul class="menu bg-base-200/50 w-full rounded-box">
     <li>
-      <a href={`${import.meta.env.BASE_URL}moments`} class={!activeYear && !activeMonth ? "active" : ""}>
+      <a
+        href={resolvePath("moments")}
+        class={!activeYear && !activeMonth ? "active" : ""}
+      >
         全部动态
       </a>
     </li>
@@ -63,7 +67,7 @@ const archives = Array.from(archiveMap.entries())
           >
             <summary class="p-0 hover:bg-transparent active:bg-transparent active:text-current [&::after]:hidden flex">
               <a
-                href={`${import.meta.env.BASE_URL}moments/${archive.year}/`}
+                href={resolvePath(`moments/${archive.year}/`)}
                 class:list={[
                   "flex-1 px-4 py-2 rounded-l-btn rounded-r-none hover:bg-base-content/10",
                   activeYear === archive.year && !activeMonth
@@ -88,7 +92,7 @@ const archives = Array.from(archiveMap.entries())
                 return (
                   <li>
                     <a
-                      href={`${import.meta.env.BASE_URL}moments/${archive.year}/${month}/`}
+                      href={resolvePath(`moments/${archive.year}/${month}/`)}
                       class={isActive ? "active font-bold" : ""}
                     >
                       {month} 月

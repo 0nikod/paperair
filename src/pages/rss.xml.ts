@@ -1,6 +1,7 @@
 import { getCollection } from "astro:content";
 import rss from "@astrojs/rss";
-import { BASE_PATH, SITE_DESCRIPTION, SITE_TITLE, SITE_URL } from "@consts";
+import { SITE_DESCRIPTION, SITE_TITLE, SITE_URL } from "@consts";
+import { resolvePath } from "@utils/path";
 import type { APIContext } from "astro";
 
 export async function GET(context: APIContext) {
@@ -16,9 +17,7 @@ export async function GET(context: APIContext) {
       title: post.data.title,
       pubDate: post.data.pubDate,
       description: post.data.description,
-      link: `${BASE_PATH}/blog/${post.id}/`
-        .replace(/\/+$/, "/")
-        .replace(/^\/+/, "/"),
+      link: resolvePath(`blog/${post.id}/`),
     })),
   });
 }
