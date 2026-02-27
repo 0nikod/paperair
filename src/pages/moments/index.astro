@@ -8,9 +8,7 @@ const title = "动态 - PaperAir";
 const description = "这里记录了我的日常与瞬间。";
 
 // Fetch and sort moments
-const allMoments = await getCollection("moments", ({ data }) => {
-  return import.meta.env.PROD ? data.test !== true : true;
-});
+const allMoments = await getCollection("moments");
 
 const sortedMoments = allMoments.sort(
   (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),

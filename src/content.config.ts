@@ -64,16 +64,12 @@ const blog = defineCollection({
       updatedDate: dateField.optional(),
       /** 标签列表 */
       tags: z.array(z.string()).default([]),
-      /** 是否为草稿，设为 true 则在生产环境隐藏 */
-      draft: z.boolean().default(false),
       /** 封面图 */
       heroImage: image().optional(),
       /** 文章分类 */
       category: z.string().optional(),
       /** 作者名称 */
       author: z.string().optional(),
-      /** 是否为测试文章，设为 true 则在生产环境隐藏 */
-      test: z.boolean().default(false),
     }),
 });
 
@@ -85,8 +81,6 @@ const moments = defineCollection({
       pubDate: dateField,
       /** 图片列表 */
       images: z.array(image()).optional(),
-      /** 是否为测试动态，设为 true 则在生产环境隐藏 */
-      test: z.boolean().default(false),
     }),
 });
 

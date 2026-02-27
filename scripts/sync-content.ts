@@ -53,10 +53,16 @@ function generateCmsConfig() {
     template = template.replace("__CONTENT_REPO__", CONTENT_REPO.repo);
     template = template.replace("__CONTENT_BRANCH__", CONTENT_REPO.branch);
   } else {
-    // 默认指向主仓库
     template = template.replace("__CONTENT_REPO__", "0nikod/paperair");
     template = template.replace("__CONTENT_BRANCH__", "master");
   }
+
+  // 根据环境变量决定是否启用 local_backend
+  // pnpm dev 会触发 predev，此时 process.env.NODE_ENV 通常未设置或为 development
+  // pnpm build 会触发 prebuild
+  const isProd =
+    process.env.NODE_ENV === "production" || process.argv.includes("--prod");
+  template = template.replace("__LOCAL_BACKEND__", (!isProd).toString());
 
   writeFileSync(CMS_OUTPUT, template, "utf-8");
   console.log("[sync-content] 已生成 CMS 配置: public/admin/config.yml");

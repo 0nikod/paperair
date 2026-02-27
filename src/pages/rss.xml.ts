@@ -5,9 +5,7 @@ import { resolvePath } from "@utils/path";
 import type { APIContext } from "astro";
 
 export async function GET(context: APIContext) {
-  const blog = await getCollection("blog", ({ data }) => {
-    return import.meta.env.PROD ? !data.draft && !data.test : true;
-  });
+  const blog = await getCollection("blog");
 
   return rss({
     title: SITE_TITLE,
