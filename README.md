@@ -150,6 +150,15 @@ export const CONTENT_REPO = {
 
 **不启用时**：`src/content` 作为普通目录保留在主仓库中，行为与拆分前完全一致。
 
+## 部署
+
+项目已预配置好 GitHub Pages 部署方案：
+
+1. 在 `astro.config.mjs` 中设置 `site` (例如 `https://<username>.github.io`)。
+2. 如果不是部署到根目录（项目名不是 `<username>.github.io`），还需设置 `base` (例如 `/paperair`)。
+3. 推送代码到 GitHub，工作流 `.github/workflows/deploy.yml` 会自动运行。
+4. 在仓库 **Settings > Pages** 中，将 **Source** 设置为 **GitHub Actions**。
+
 ## 许可证
 
 [GPL-3.0](LICENSE)
