@@ -34,6 +34,7 @@ collections:
     folder: "src/content/moments"
     create: true
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    summary: "{{year}}-{{month}}-{{day}} | {{body}}"
     extension: "md"
     fields:
       - { label: "发布日期", name: "pubDate", widget: "datetime", format: "YYYY-MM-DDTHH:mm:ss" }
