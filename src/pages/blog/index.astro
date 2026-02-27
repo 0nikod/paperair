@@ -1,29 +1,115 @@
 ---
 import ArticleCard from "@components/ArticleCard.astro";
-import BaseLayout from "@layouts/BaseLayout.astro";
+import BlogIndexLayout from "@layouts/BlogIndexLayout.astro";
 import { getPublishedPosts } from "@utils/content";
 
 const sortedPosts = await getPublishedPosts();
+
+// Group posts by year
+const postsByYear = new Map<string, typeof sortedPosts>();
+sortedPosts.forEach((post) => {
+  const year = post.data.pubDate.getFullYear().toString();
+  if (!postsByYear.has(year)) {
+    postsByYear.set(year, []);
+  }
+  postsByYear.get(year)?.push(post);
+});
+
+const years = Array.from(postsByYear.keys()).sort((a, b) => b.localeCompare(a));
 ---
 
-<BaseLayout title="Blog | PaperAir" description="我的文章列表">
-  <div class="py-12">
-    <h1 class="text-4xl font-extrabold mb-10 text-base-content text-center">
-      所有文章
-    </h1>
-
+<BlogIndexLayout
+  title="博客 | PaperAir"
+  description="我的文章列表"
+  allPosts={sortedPosts}
+>
+  <div class="flex flex-col gap-12">
     {
       sortedPosts.length === 0 ? (
         <div class="text-center text-base-content/60 py-20">
           <p class="text-xl">还没有发布任何文章哦 ~</p>
         </div>
       ) : (
-        <div class="flex flex-col gap-y-6 max-w-3xl mx-auto">
-          {sortedPosts.map((post) => (
-            <ArticleCard post={post} layout="list" />
-          ))}
-        </div>
+        years.map((year) => (
+          <section class="year-group" data-year={year}>
+            <h2 class="text-2xl font-black mb-6 text-base-content/30 sticky top-24 bg-base-100/80 backdrop-blur-sm z-10 py-2 inline-block px-4 -ml-4 rounded-r-lg">
+              {year}
+            </h2>
+            <div class="flex flex-col gap-y-4">
+              {postsByYear.get(year)?.map((post) => (
+                <ArticleCard post={post} layout="timeline" />
+              ))}
+            </div>
+          </section>
+        ))
       )
     }
   </div>
-</BaseLayout>
+
+  {/* Client-side Filtering Script */}
+  <script>
+    function updateFilters() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const activeTag = urlParams.get("tag");
+      const activeCategory = urlParams.get("category");
+
+      const cards = document.querySelectorAll("[data-blog-card]");
+      const yearGroups = document.querySelectorAll(".year-group");
+
+      let visibleCount = 0;
+
+      cards.forEach((card) => {
+        const category = card.getAttribute("data-category");
+        const tags = card.getAttribute("data-tags")?.split(",") || [];
+
+        let visible = true;
+        if (activeTag && !tags.includes(activeTag)) visible = false;
+        if (activeCategory && category !== activeCategory) visible = false;
+
+        card.classList.toggle("hidden", !visible);
+        if (visible) visibleCount++;
+      });
+
+      // Hide empty year groups
+      yearGroups.forEach((group) => {
+        const visibleInGroup = group.querySelectorAll(
+          "[data-blog-card]:not(.hidden)"
+        ).length;
+        group.classList.toggle("hidden", visibleInGroup === 0);
+      });
+
+      // Update active state in sidebar
+      const filterLinks = document.querySelectorAll(".menu a, .badge");
+      filterLinks.forEach((link) => {
+        const href = link.getAttribute("href");
+        if (!href) return;
+
+        const linkParams = new URLSearchParams(href.split("?")[1] || "");
+        const linkTag = linkParams.get("tag");
+        const linkCategory = linkParams.get("category");
+
+        const isActive =
+          linkTag === activeTag && linkCategory === activeCategory;
+
+        if (link.classList.contains("badge")) {
+          link.classList.toggle("badge-primary", isActive);
+          link.classList.toggle("badge-outline", !isActive);
+        } else {
+          link.classList.toggle("active", isActive);
+        }
+      });
+    }
+
+    // Run on load
+    updateFilters();
+
+    // Re-run on navigation (if using View Transitions)
+    document.addEventListener("astro:after-navigation", updateFilters);
+
+    // Listen for popsate (back/forward)
+    window.addEventListener("popstate", updateFilters);
+
+    // Optional: Intercept tag clicks to avoid full page reload if desired
+    // (though SSR/Hydration usually handles this better in other frameworks)
+  </script>
+</BlogIndexLayout>

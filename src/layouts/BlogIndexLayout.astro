@@ -1,0 +1,70 @@
+---
+import type { CollectionEntry } from "astro:content";
+import BlogFilter from "@components/BlogFilter.astro";
+import BaseLayout from "@layouts/BaseLayout.astro";
+import { Icon } from "astro-icon/components";
+
+interface Props {
+  title: string;
+  description: string;
+  allPosts: CollectionEntry<"blog">[];
+  activeTag?: string | undefined;
+  activeCategory?: string | undefined;
+}
+
+const { title, description, allPosts, activeTag, activeCategory } = Astro.props;
+---
+
+<BaseLayout title={title} description={description} mainClass="max-w-5xl">
+  <div class="flex flex-col md:flex-row gap-12 py-8 w-full">
+    {/* Main Blog Content */}
+    <div class="grow w-full max-w-3xl order-2 md:order-1" data-pagefind-body>
+      <span data-pagefind-filter="type:blog" class="hidden"></span>
+      <slot name="header">
+        <h1 class="text-3xl font-extrabold mb-10 flex items-center gap-3">
+          <Icon name="ri:article-line" class="text-primary w-8 h-8" />
+          所有文章
+        </h1>
+      </slot>
+
+      <slot />
+    </div>
+
+    {/* Sidebar Filter */}
+    <aside class="w-full md:w-64 shrink-0 order-1 md:order-2">
+      <div class="sticky top-24">
+        <BlogFilter
+          posts={allPosts}
+          activeTag={activeTag}
+          activeCategory={activeCategory}
+          class="hidden md:flex"
+        />
+
+        {/* Mobile Dropdown for filters */}
+        <div class="md:hidden dropdown w-full mb-8">
+          <div
+            tabindex="0"
+            role="button"
+            class="btn btn-outline w-full justify-between"
+          >
+            <span class="flex items-center gap-2">
+              <Icon name="ri:filter-3-line" class="w-5 h-5" />
+              筛选文章
+            </span>
+            <Icon name="ri:arrow-down-s-line" class="w-4 h-4" />
+          </div>
+          <div
+            tabindex="0"
+            class="dropdown-content z-1 menu p-4 shadow-xl bg-base-100 rounded-box w-full mt-2 border border-base-200"
+          >
+            <BlogFilter
+              posts={allPosts}
+              activeTag={activeTag}
+              activeCategory={activeCategory}
+            />
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</BaseLayout>

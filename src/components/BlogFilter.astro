@@ -1,0 +1,106 @@
+---
+/**
+ * 博客标签筛选侧边栏组件
+ * 按标签和分类对博客文章进行归档。
+ */
+import type { CollectionEntry } from "astro:content";
+import { Icon } from "astro-icon/components";
+
+interface Props {
+  /** 所有博客文章 */
+  posts: CollectionEntry<"blog">[];
+  /** 当前选中的标签 */
+  activeTag?: string | undefined;
+  /** 当前选中的分类 */
+  activeCategory?: string | undefined;
+  /** 自定义样式类 */
+  class?: string | undefined;
+}
+
+const { posts, activeTag, activeCategory, class: className } = Astro.props;
+
+// Get unique categories and tags with counts
+const categoriesMap = new Map<string, number>();
+const tagsMap = new Map<string, number>();
+
+posts.forEach((post) => {
+  const { category, tags = [] } = post.data;
+  if (category) {
+    categoriesMap.set(category, (categoriesMap.get(category) || 0) + 1);
+  }
+  tags.forEach((tag: string) => {
+    tagsMap.set(tag, (tagsMap.get(tag) || 0) + 1);
+  });
+});
+
+const categories = Array.from(categoriesMap.entries())
+  .map(([name, count]) => ({ name, count }))
+  .sort((a, b) => b.count - a.count);
+
+const tags = Array.from(tagsMap.entries())
+  .map(([name, count]) => ({ name, count }))
+  .sort((a, b) => b.count - a.count);
+---
+
+<div class:list={["w-full flex flex-col gap-6", className]}>
+  {/* Categories */}
+  {
+    categories.length > 0 && (
+      <div class="w-full">
+        <h2 class="text-sm font-bold mb-3 px-4 flex items-center gap-2 text-base-content/60 uppercase tracking-wider">
+          <Icon name="ri:folder-line" class="w-4 h-4" /> 分类
+        </h2>
+        <ul class="menu bg-base-200/50 w-full rounded-box p-2">
+          <li>
+            <a
+              href="/blog"
+              class={!activeTag && !activeCategory ? "active" : ""}
+            >
+              全部文章
+            </a>
+          </li>
+          {categories.map((cat) => (
+            <li>
+              <a
+                href={`/blog?category=${cat.name}`}
+                class={activeCategory === cat.name ? "active font-bold" : ""}
+              >
+                <span class="flex-1 truncate">{cat.name}</span>
+                <span class="badge badge-sm badge-ghost opacity-60">
+                  {cat.count}
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )
+  }
+
+  {/* Tags */}
+  {
+    tags.length > 0 && (
+      <div class="w-full">
+        <h2 class="text-sm font-bold mb-3 px-4 flex items-center gap-2 text-base-content/60 uppercase tracking-wider">
+          <Icon name="ri:price-tag-3-line" class="w-4 h-4" /> 标签
+        </h2>
+        <div class="flex flex-wrap gap-2 px-2">
+          {tags.map((tag: { name: string; count: number }) => (
+            <a
+              href={`/blog?tag=${tag.name}`}
+              class:list={[
+                "badge badge-lg hover:badge-primary transition-colors py-4 px-4",
+                activeTag === tag.name
+                  ? "badge-primary"
+                  : "badge-outline opacity-70",
+              ]}
+            >
+              {tag.name}
+              <span class="ml-1.5 opacity-50 text-xs">({tag.count})</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    )
+  }
+</div>
