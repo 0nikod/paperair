@@ -16,7 +16,10 @@ const today = new Date();
       Copyright © {today.getFullYear()} - All right reserved by {
         footerConfig.author
       }
-      | <a href="/sitemap-index.xml" class="link link-hover">Sitemap</a>
+      | <a
+        href={`${import.meta.env.BASE_URL}sitemap-index.xml`}
+        class="link link-hover">Sitemap</a
+      >
     </p>
   </aside>
   <nav>

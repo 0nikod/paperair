@@ -31,8 +31,12 @@ const allMoments = await getPublishedMoments(3).catch(() => []);
         Welcome to PaperAir
       </h1>
       <div class="flex justify-center gap-4 pt-8">
-        <a href="/blog" class="btn btn-primary px-8">阅读文章</a>
-        <a href="/about" class="btn btn-ghost px-8">关于我</a>
+        <a href={`${import.meta.env.BASE_URL}blog`} class="btn btn-primary px-8"
+          >阅读文章</a
+        >
+        <a href={`${import.meta.env.BASE_URL}about`} class="btn btn-ghost px-8"
+          >关于我</a
+        >
       </div>
     </section>
 
@@ -42,7 +46,9 @@ const allMoments = await getPublishedMoments(3).catch(() => []);
         <h2 class="text-2xl font-bold flex items-center gap-2">
           <span class="text-primary">#</span> 最近文章
         </h2>
-        <a href="/blog" class="btn btn-ghost btn-sm">查看全部 &rarr;</a>
+        <a href={`${import.meta.env.BASE_URL}blog`} class="btn btn-ghost btn-sm"
+          >查看全部 &rarr;</a
+        >
       </div>
 
       {
@@ -74,7 +80,10 @@ const allMoments = await getPublishedMoments(3).catch(() => []);
         <h2 class="text-2xl font-bold flex items-center gap-2">
           <span class="text-secondary">#</span> 最近动态
         </h2>
-        <a href="/moments" class="btn btn-ghost btn-sm">查看全部 &rarr;</a>
+        <a
+          href={`${import.meta.env.BASE_URL}moments`}
+          class="btn btn-ghost btn-sm">查看全部 &rarr;</a
+        >
       </div>
 
       {

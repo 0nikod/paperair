@@ -17,16 +17,20 @@ const { currentPath, isMobile = false } = Astro.props;
 
 const isActive = (href: string) => {
   const base = import.meta.env.BASE_URL.replace(/\/$/, "");
-  const normalizedHref =
-    href === "/" ? base || "/" : `${base}${href}`.replace(/\/$/, "");
+  // Ensure href starts with / for consistency in comparison
+  const normalizedHrefPath = href.startsWith("/") ? href : `/${href}`;
+  const normalizedHref = `${base}${normalizedHrefPath}`.replace(/\/$/, "");
   const normalizedPath = currentPath.replace(/\/$/, "");
 
-  // 如果 href 是首页
+  // If href is首页
   if (href === "/") {
     return normalizedPath === base || normalizedPath === "";
   }
 
-  return normalizedPath.startsWith(normalizedHref);
+  return (
+    normalizedPath === normalizedHref ||
+    normalizedPath.startsWith(`${normalizedHref}/`)
+  );
 };
 ---
 
