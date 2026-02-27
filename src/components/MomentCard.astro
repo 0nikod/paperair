@@ -1,11 +1,11 @@
 ---
 /**
- * 动态精简卡片组件
- * 用于展示单条动态（Moment）的文字摘要和发布时间。
- * 常用于首页等需要简约展示动态内容的场景。
+ * 动态卡片组件
+ * 展示动态的具体内容，支持折叠展开和图片展示。
  */
 import type { CollectionEntry } from "astro:content";
-import ClientDate from "@components/ClientDate.astro";
+import { render } from "astro:content";
+import ImageGrid from "@components/ImageGrid.astro";
 import { Icon } from "astro-icon/components";
 
 interface Props {
@@ -16,23 +16,150 @@ interface Props {
 }
 
 const { moment, class: className } = Astro.props;
+const { Content } = await render(moment);
+
+const date = moment.data.pubDate;
+const year = date.getFullYear().toString();
+const month = (date.getMonth() + 1).toString().padStart(2, "0");
+const day = date.getDate().toString().padStart(2, "0");
+
+// A unique URL for this moment
+const momentUrl = `/moments/${year}/${month}/${day}/${moment.id.replace(
+  /\.[^/.]+$/,
+  "",
+)}/`;
 ---
 
-<article
-  class:list={[
-    "card bg-base-100 border border-base-200 hover:shadow-md transition-shadow",
-    className,
-  ]}
->
-  <div class="card-body p-6">
-    <div class="text-sm text-base-content/80 line-clamp-4">
-      {moment.body}
-    </div>
+<moment-expandable class:list={["block", className]}>
+  <div
+    class="card bg-base-100 border border-base-200 shadow-sm hover:shadow-md transition-shadow"
+  >
     <div
-      class="mt-4 text-xs text-base-content/40 flex justify-end items-center gap-1"
+      class="card-body p-4 md:p-6 overflow-hidden relative"
+      data-content-container
     >
-      <Icon name="ri:time-line" class="w-3.5 h-3.5" />
-      <ClientDate date={moment.data.pubDate} format="datetime" />
+      {/* Content proper */}
+      <div class="prose prose-sm max-w-none mb-4 prose-a:text-primary">
+        <Content />
+      </div>
+
+      {/* Images Grid */}
+      {
+        moment.data.images && moment.data.images.length > 0 && (
+          <ImageGrid images={moment.data.images} class="mt-2" />
+        )
+      }
+
+      {/* Gradient Cover for truncation */}
+      <div
+        data-gradient-cover
+        class="absolute bottom-0 left-0 right-0 h-24 bg-linear-to-t from-base-100 to-transparent hidden"
+      >
+      </div>
+    </div>
+
+    <div
+      class="px-6 pb-4 pt-1 flex justify-between items-center border-t border-base-200/50 mt-2"
+    >
+      <a
+        href={momentUrl}
+        class="text-xs text-base-content/50 hover:text-primary transition-colors flex items-center gap-1"
+      >
+        <Icon name="ri:link" class="w-3.5 h-3.5" />
+        单页
+      </a>
+      <button data-expand-btn class="btn btn-ghost btn-xs text-primary hidden">
+        展开全文 <Icon name="ri:arrow-down-s-line" class="inline w-3.5 h-3.5" />
+      </button>
     </div>
   </div>
-</article>
+</moment-expandable>
+
+<script>
+  class MomentExpandable extends HTMLElement {
+    private container: HTMLElement;
+    private expandBtn: HTMLButtonElement;
+    private gradientCover: HTMLElement;
+    private isExpanded = false;
+    private readonly MAX_HEIGHT = 300;
+
+    constructor() {
+      super();
+      this.container = this.querySelector(
+        "[data-content-container]"
+      ) as HTMLElement;
+      this.expandBtn = this.querySelector(
+        "[data-expand-btn]"
+      ) as HTMLButtonElement;
+      this.gradientCover = this.querySelector(
+        "[data-gradient-cover]"
+      ) as HTMLElement;
+
+      this.checkHeight = this.checkHeight.bind(this);
+      this.toggleExpand = this.toggleExpand.bind(this);
+    }
+
+    connectedCallback() {
+      this.checkHeight();
+      window.addEventListener("resize", this.checkHeight);
+      if (this.expandBtn) {
+        this.expandBtn.addEventListener("click", this.toggleExpand);
+      }
+      const images = this.querySelectorAll("img");
+      images.forEach((img) => {
+        if (!img.complete) {
+          img.addEventListener("load", this.checkHeight);
+        }
+      });
+    }
+
+    disconnectedCallback() {
+      window.removeEventListener("resize", this.checkHeight);
+      if (this.expandBtn) {
+        this.expandBtn.removeEventListener("click", this.toggleExpand);
+      }
+    }
+
+    private checkHeight() {
+      this.container.style.maxHeight = "none";
+      const trueHeight = this.container.scrollHeight;
+
+      if (trueHeight > this.MAX_HEIGHT * 1.2) {
+        if (!this.isExpanded) {
+          this.container.style.maxHeight = `${this.MAX_HEIGHT}px`;
+          this.expandBtn.classList.remove("hidden");
+          this.gradientCover.classList.remove("hidden");
+        }
+      } else {
+        this.container.style.maxHeight = "none";
+        this.expandBtn.classList.add("hidden");
+        this.gradientCover.classList.add("hidden");
+      }
+    }
+
+    private toggleExpand() {
+      this.isExpanded = !this.isExpanded;
+      if (this.isExpanded) {
+        this.container.style.maxHeight = "none";
+        this.gradientCover.classList.add("hidden");
+        this.expandBtn.innerHTML = `收起 <span class="i-ri-arrow-up-s-line w-4 h-4"></span>`;
+      } else {
+        this.container.style.maxHeight = `${this.MAX_HEIGHT}px`;
+        this.gradientCover.classList.remove("hidden");
+        this.expandBtn.innerHTML = `展开全文 <span class="i-ri-arrow-down-s-line w-4 h-4"></span>`;
+
+        const rect = this.getBoundingClientRect();
+        if (rect.top < 0) {
+          window.scrollBy({
+            top: rect.top - 100,
+            behavior: "smooth",
+          });
+        }
+      }
+    }
+  }
+
+  if (!customElements.get("moment-expandable")) {
+    customElements.define("moment-expandable", MomentExpandable);
+  }
+</script>

@@ -5,10 +5,8 @@
  * 支持内容超长折叠、展开功能，以及生成动态的单页链接。
  */
 import type { CollectionEntry } from "astro:content";
-import { render } from "astro:content";
 import ClientDate from "@components/ClientDate.astro";
-import ImageGrid from "@components/ImageGrid.astro";
-import { Icon } from "astro-icon/components";
+import MomentCard from "@components/MomentCard.astro";
 
 interface Props {
   /** 动态条目数据 */
@@ -27,18 +25,11 @@ const {
   showYear = false,
   isLast = false,
 } = Astro.props;
-const { Content } = await render(moment);
 
 const date = moment.data.pubDate;
 const year = date.getFullYear().toString();
 const month = (date.getMonth() + 1).toString().padStart(2, "0");
 const day = date.getDate().toString().padStart(2, "0");
-
-// A unique URL for this moment
-const momentUrl = `/moments/${year}/${month}/${day}/${moment.id.replace(
-  /\.[^/.]+$/,
-  "",
-)}/`;
 ---
 
 <article class:list={["flex gap-4 w-full relative group", className]}>
@@ -75,156 +66,8 @@ const momentUrl = `/moments/${year}/${month}/${day}/${moment.id.replace(
   <span data-pagefind-filter={`year:${year}`} class="hidden"></span>
   <span data-pagefind-filter={`month:${year}-${month}`} class="hidden"></span>
 
-  {/* Card Content */}
-  <moment-expandable class="grow pb-10">
-    <div
-      class="card bg-base-100 border border-base-200 shadow-sm hover:shadow-md transition-shadow"
-    >
-      <div
-        class="card-body p-4 md:p-6 overflow-hidden relative"
-        data-content-container
-      >
-        {/* Content proper */}
-        <div class="prose prose-sm max-w-none mb-4 prose-a:text-primary">
-          <Content />
-        </div>
-
-        {/* Images Grid */}
-        {
-          moment.data.images && moment.data.images.length > 0 && (
-            <ImageGrid images={moment.data.images} class="mt-2" />
-          )
-        }
-
-        {/* Gradient Cover for truncation */}
-        <div
-          data-gradient-cover
-          class="absolute bottom-0 left-0 right-0 h-24 bg-linear-to-t from-base-100 to-transparent hidden"
-        >
-          {
-            /* The button is handled below, but gradient needs to sit at the bottom */
-          }
-        </div>
-      </div>
-
-      <div
-        class="px-6 pb-4 pt-1 flex justify-between items-center border-t border-base-200/50 mt-2"
-      >
-        <a
-          href={momentUrl}
-          class="text-xs text-base-content/50 hover:text-primary transition-colors flex items-center gap-1"
-        >
-          <Icon name="ri:link" class="w-3.5 h-3.5" />
-          单页
-        </a>
-        <button
-          data-expand-btn
-          class="btn btn-ghost btn-xs text-primary hidden"
-        >
-          展开全文 <Icon
-            name="ri:arrow-down-s-line"
-            class="inline w-3.5 h-3.5"
-          />
-        </button>
-      </div>
-    </div>
-  </moment-expandable>
-
-  <script>
-    class MomentExpandable extends HTMLElement {
-      private container: HTMLElement;
-      private expandBtn: HTMLButtonElement;
-      private gradientCover: HTMLElement;
-      private isExpanded = false;
-      private readonly MAX_HEIGHT = 300;
-
-      constructor() {
-        super();
-        this.container = this.querySelector(
-          "[data-content-container]"
-        ) as HTMLElement;
-        this.expandBtn = this.querySelector(
-          "[data-expand-btn]"
-        ) as HTMLButtonElement;
-        this.gradientCover = this.querySelector(
-          "[data-gradient-cover]"
-        ) as HTMLElement;
-
-        // 绑定方法
-        this.checkHeight = this.checkHeight.bind(this);
-        this.toggleExpand = this.toggleExpand.bind(this);
-      }
-
-      connectedCallback() {
-        // Initial check
-        this.checkHeight();
-
-        // Listen for window resize
-        window.addEventListener("resize", this.checkHeight);
-
-        // Handle button click
-        if (this.expandBtn) {
-          this.expandBtn.addEventListener("click", this.toggleExpand);
-        }
-
-        // Also observe images loading within this component to re-check height
-        const images = this.querySelectorAll("img");
-        images.forEach((img) => {
-          if (!img.complete) {
-            img.addEventListener("load", this.checkHeight);
-          }
-        });
-      }
-
-      disconnectedCallback() {
-        // 关键优化：清理全局监听器防止内存泄漏
-        window.removeEventListener("resize", this.checkHeight);
-        if (this.expandBtn) {
-          this.expandBtn.removeEventListener("click", this.toggleExpand);
-        }
-      }
-
-      private checkHeight() {
-        // Reset max-height momentarily to measure true height
-        this.container.style.maxHeight = "none";
-        const trueHeight = this.container.scrollHeight;
-
-        if (trueHeight > this.MAX_HEIGHT * 1.2) {
-          // Add 20% slack so we don't truncate just for a few pixels
-          if (!this.isExpanded) {
-            this.container.style.maxHeight = `${this.MAX_HEIGHT}px`;
-            this.expandBtn.classList.remove("hidden");
-            this.gradientCover.classList.remove("hidden");
-          }
-        } else {
-          this.container.style.maxHeight = "none";
-          this.expandBtn.classList.add("hidden");
-          this.gradientCover.classList.add("hidden");
-        }
-      }
-
-      private toggleExpand() {
-        this.isExpanded = !this.isExpanded;
-        if (this.isExpanded) {
-          this.container.style.maxHeight = "none";
-          this.gradientCover.classList.add("hidden");
-          this.expandBtn.innerHTML = `收起 <span class="i-ri-arrow-up-s-line w-4 h-4"></span>`;
-        } else {
-          this.container.style.maxHeight = `${this.MAX_HEIGHT}px`;
-          this.gradientCover.classList.remove("hidden");
-          this.expandBtn.innerHTML = `展开全文 <span class="i-ri-arrow-down-s-line w-4 h-4"></span>`;
-
-          const rect = this.getBoundingClientRect();
-          if (rect.top < 0) {
-            window.scrollBy({
-              top: rect.top - 100, // 100px offset for header
-              behavior: "smooth",
-            });
-          }
-        }
-      }
-    }
-
-    customElements.define("moment-expandable", MomentExpandable);
-  </script>
+  {/* Card Content (Extracted to MomentCard) */}
+  <div class="grow pb-10">
+    <MomentCard moment={moment} />
+  </div>
 </article>
