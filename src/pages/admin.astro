@@ -1,4 +1,5 @@
 ---
+import globalCssUrl from "@styles/global.css?url";
 import { resolvePath } from "@utils/path";
 ---
 
@@ -17,5 +18,8 @@ import { resolvePath } from "@utils/path";
   </head>
   <body>
     <script src="https://unpkg.com/decap-cms@^3.1.2/dist/decap-cms.js"></script>
+    <script is:inline define:vars={{ globalCssUrl }}>
+      CMS.registerPreviewStyle(globalCssUrl);
+    </script>
   </body>
 </html>
