@@ -5,10 +5,11 @@ import tailwindcss from "@tailwindcss/vite";
 import { defineConfig, fontProviders } from "astro/config";
 import icon from "astro-icon";
 import pagefind from "astro-pagefind";
+import { SITE_URL } from "./consts";
 
 // https://astro.build/config
 export default defineConfig({
-  site: "https://example.com",
+  site: SITE_URL,
   vite: {
     plugins: [tailwindcss()],
   },
