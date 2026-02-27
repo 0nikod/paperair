@@ -1,3 +1,5 @@
+import { resolvePath } from "@utils/path";
+
 export interface SocialLink {
   ariaLabel: string;
   icon: string;
@@ -20,7 +22,7 @@ export const footerConfig: FooterConfig = {
     {
       ariaLabel: "RSS Feed",
       icon: "ri:rss-fill",
-      url: "/rss.xml",
+      url: resolvePath("/rss.xml"),
     },
   ],
 };

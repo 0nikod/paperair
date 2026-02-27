@@ -42,7 +42,7 @@ const {
 			rel="alternate"
 			type="application/rss+xml"
 			title={title}
-			href={new URL("rss.xml", Astro.site)}
+			href={resolvePath("rss.xml")}
 		/>
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
