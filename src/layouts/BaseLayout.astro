@@ -57,11 +57,16 @@ const {
 				--font-mono: var(--font-cascadia-code), ui-monospace, monospace;
 			}
 		</style>
-
+	</head>
+	<body
+		class="min-h-screen flex flex-col font-sans antialiased text-base-content selection:bg-primary/30 bg-base-200"
+	>
 		<Navbar />
-	</head><main class={`grow w-full mx-auto px-4 sm:px-6 lg:px-8 ${mainClass}`}>
-		<slot />
-	</main>
 
-	<Footer />
+		<main class={`grow w-full mx-auto px-4 sm:px-6 lg:px-8 ${mainClass}`}>
+			<slot />
+		</main>
+
+		<Footer />
+	</body>
 </html>
