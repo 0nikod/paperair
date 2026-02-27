@@ -1,4 +1,5 @@
-export const SITE_URL = "https://example.com";
+export const SITE_URL = "https://0nikod.github.io/paperair";
+export const BASE_PATH = "/paperair";
 
 export const SITE_TITLE = "PaperAir";
 export const SITE_DESCRIPTION = "Welcome!";
