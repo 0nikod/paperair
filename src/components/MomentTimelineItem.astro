@@ -32,20 +32,34 @@ const month = (date.getMonth() + 1).toString().padStart(2, "0");
 const day = date.getDate().toString().padStart(2, "0");
 ---
 
-<article class:list={["flex gap-4 w-full relative group", className]}>
-  {/* Timeline vertical line */}
-  {
-    !isLast && (
-      <div
-        class="absolute left-10 md:left-16 top-10 -bottom-10 w-px bg-base-300"
-        aria-hidden="true"
-      />
-    )
-  }
+<article class:list={["flex gap-3 w-full relative group", className]}>
+  {/* Timeline column with dot and vertical line */}
+  <div class="w-8 shrink-0 flex flex-col items-center relative">
+    {/* Timeline Dot */}
+    <div
+      class="relative z-10 w-4 h-4 mt-2 rounded-full border-2 border-primary bg-base-100 shrink-0 flex items-center justify-center group-hover:bg-primary/20 transition-colors duration-300"
+      aria-hidden="true"
+    >
+    </div>
 
-  {/* Date & Time Column */}
-  <div class="w-20 md:w-32 shrink-0 flex flex-col items-end pt-1">
-    <div class="flex flex-col items-end">
+    {/* Timeline vertical line */}
+    {
+      !isLast && (
+        <div
+          class="absolute left-1/2 -translate-x-1/2 top-10 -bottom-10 w-px bg-base-300"
+          aria-hidden="true"
+        />
+      )
+    }
+  </div>
+
+  <span data-pagefind-filter={`year:${year}`} class="hidden"></span>
+  <span data-pagefind-filter={`month:${year}-${month}`} class="hidden"></span>
+
+  {/* Content Area */}
+  <div class="grow pb-10">
+    {/* Date & Time Row */}
+    <div class="flex items-center gap-2 mb-2 pt-1">
       <div class="text-sm md:text-base font-bold text-base-content/80">
         {showYear ? `${year}-${month}-${day}` : `${month}-${day}`}
       </div>
@@ -55,19 +69,8 @@ const day = date.getDate().toString().padStart(2, "0");
         class="text-xs text-base-content/50"
       />
     </div>
-  </div>
 
-  {/* Timeline Dot */}
-  <div
-    class="relative z-10 w-4 h-4 mt-2 rounded-full border-2 border-primary bg-base-100 shrink-0 flex items-center justify-center group-hover:bg-primary/20 transition-colors duration-300"
-    aria-hidden="true"
-  >
-  </div>
-  <span data-pagefind-filter={`year:${year}`} class="hidden"></span>
-  <span data-pagefind-filter={`month:${year}-${month}`} class="hidden"></span>
-
-  {/* Card Content (Extracted to MomentCard) */}
-  <div class="grow pb-10">
+    {/* Card Content (Extracted to MomentCard) */}
     <MomentCard moment={moment} />
   </div>
 </article>
