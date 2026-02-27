@@ -154,19 +154,18 @@ export const CONTENT_REPO = {
 
 ### GitHub Pages
 
-1. 在 `consts.ts` 中设置 `site` (例如 `https://<username>.github.io`)。
-2. 在仓库 **Settings > Pages** 中，将 **Source** 设置为 **GitHub Actions**。
-3. 推送代码到 `master` 分支。
-
-现在部署应该会自动运行，可能要在 `Actions` 中启用。
+1. 在 `consts.ts` 中设置 `SITE_URL` (例如 `https://<username>.github.io/paperair`)。
+2. 在 `consts.ts` 中设置 `BASE_PATH` (例如 `/paperair`)。如果不是部署到子路径，请设为 `/`。
+3. 在仓库 **Settings > Pages** 中，将 **Source** 设置为 **GitHub Actions**。
+4. 推送代码到 `master` 分支，部署会自动执行。
 
 ### Cloudflare Pages
 
-1. 在仓库 **Settings > Secrets and variables > Actions** 中添加 `CLOUDFLARE_API_TOKEN` 机密（必需）。可能需要添加 `CLOUDFLARE_ACCOUNT_ID`。
-2. 可以通过改变机密 `CLOUDFLARE_PROJECT_NAME` 来指定项目名称，或者让它自动从 `wrangler.toml` 中读取。
-3. 推送代码到 `master` 分支。
-
-现在部署应该会自动运行，可能要在 `Actions` 中启用。
+1. 在仓库 **Settings > Secrets and variables > Actions** 中添加 `CLOUDFLARE_API_TOKEN` 机密（必需）。
+2. 可选：添加 `CLOUDFLARE_ACCOUNT_ID` 和 `CLOUDFLARE_PROJECT_NAME`。
+3. 如果未设置项目名密钥，系统将自动读取 `wrangler.jsonc` 中的 `name`。
+4. 注意：Cloudflare 默认部署在根目录，如需部署到 Pages，通常需要将 `consts.ts` 中的 `BASE_PATH` 设为 `/`。
+5. 推送代码到 `master` 分支，部署会自动执行。
 
 ## 许可证
 
