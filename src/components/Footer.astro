@@ -1,5 +1,6 @@
 ---
 import { footerConfig } from "@settings/footer";
+import { resolvePath } from "@utils/path";
 /**
  * 全站底部组件
  * 包含版权信息和社交媒体链接。
@@ -16,9 +17,8 @@ const today = new Date();
       Copyright © {today.getFullYear()} - All right reserved by {
         footerConfig.author
       }
-      | <a
-        href={`${import.meta.env.BASE_URL}sitemap-index.xml`}
-        class="link link-hover">Sitemap</a
+      | <a href={resolvePath("sitemap-index.xml")} class="link link-hover"
+        >Sitemap</a
       >
     </p>
   </aside>

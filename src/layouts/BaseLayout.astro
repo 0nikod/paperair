@@ -3,6 +3,7 @@ import "@styles/global.css";
 import { Font } from "astro:assets";
 import Footer from "@components/Footer.astro";
 import Navbar from "@components/Navbar.astro";
+import { resolvePath } from "@utils/path";
 
 interface Props {
   title?: string | undefined;
@@ -35,12 +36,8 @@ const {
 		</script>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
-		<link
-			rel="icon"
-			type="image/svg+xml"
-			href={`${import.meta.env.BASE_URL}favicon.svg`}
-		/>
-		<link rel="sitemap" href={`${import.meta.env.BASE_URL}sitemap-index.xml`} />
+		<link rel="icon" type="image/svg+xml" href={resolvePath("favicon.svg")} />
+		<link rel="sitemap" href={resolvePath("sitemap-index.xml")} />
 		<link
 			rel="alternate"
 			type="application/rss+xml"
@@ -60,16 +57,11 @@ const {
 				--font-mono: var(--font-cascadia-code), ui-monospace, monospace;
 			}
 		</style>
-	</head>
-	<body
-		class="min-h-screen flex flex-col font-sans antialiased text-base-content selection:bg-primary/30 bg-base-200"
-	>
+
 		<Navbar />
+	</head><main class={`grow w-full mx-auto px-4 sm:px-6 lg:px-8 ${mainClass}`}>
+		<slot />
+	</main>
 
-		<main class={`grow w-full mx-auto px-4 sm:px-6 lg:px-8 ${mainClass}`}>
-			<slot />
-		</main>
-
-		<Footer />
-	</body>
+	<Footer />
 </html>

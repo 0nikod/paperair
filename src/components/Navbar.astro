@@ -8,6 +8,7 @@ import NavLinks from "@components/NavLinks.astro";
 import SearchBar from "@components/SearchBar.astro";
 import ThemeToggle from "@components/ThemeToggle.astro";
 import { SITE_TITLE } from "@consts";
+import { resolvePath } from "@utils/path";
 import { Icon } from "astro-icon/components";
 
 const pathname = Astro.url.pathname;
@@ -27,7 +28,7 @@ const currentPath =
     {/* Left: Logo & Title */}
     <div class="flex-1">
       <a
-        href={import.meta.env.BASE_URL}
+        href={resolvePath("/")}
         class="flex items-center gap-2 hover:opacity-80 transition-opacity focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary rounded-btn p-1"
         aria-label="返回首页"
       >

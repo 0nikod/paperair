@@ -5,6 +5,7 @@
  * 自动根据当前路径（currentPath）判断并应用活动状态（Active）的高亮样式。
  */
 import { NAV_LINKS } from "@consts";
+import { resolvePath } from "@utils/path";
 
 interface Props {
   /** 当前页面的路径 */
@@ -16,14 +17,12 @@ interface Props {
 const { currentPath, isMobile = false } = Astro.props;
 
 const isActive = (href: string) => {
-  const base = import.meta.env.BASE_URL.replace(/\/$/, "");
-  // Ensure href starts with / for consistency in comparison
-  const normalizedHrefPath = href.startsWith("/") ? href : `/${href}`;
-  const normalizedHref = `${base}${normalizedHrefPath}`.replace(/\/$/, "");
+  const normalizedHref = resolvePath(href).replace(/\/$/, "");
   const normalizedPath = currentPath.replace(/\/$/, "");
 
   // If href is首页
   if (href === "/") {
+    const base = import.meta.env.BASE_URL.replace(/\/$/, "");
     return normalizedPath === base || normalizedPath === "";
   }
 
@@ -41,7 +40,7 @@ const isActive = (href: string) => {
         return (
           <li>
             <a
-              href={`${import.meta.env.BASE_URL}${link.href.slice(1)}`}
+              href={resolvePath(link.href)}
               class={`text-[15px] font-medium py-2 ${
                 active
                   ? "active bg-primary/10 text-primary"
@@ -59,7 +58,7 @@ const isActive = (href: string) => {
         return (
           <li class="h-16 flex items-center">
             <a
-              href={`${import.meta.env.BASE_URL}${link.href.slice(1)}`}
+              href={resolvePath(link.href)}
               class={`relative text-[15px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary rounded-btn h-full flex items-center
                   ${
                     active
