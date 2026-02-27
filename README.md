@@ -152,12 +152,21 @@ export const CONTENT_REPO = {
 
 ## 部署
 
-项目已预配置好 GitHub Pages 部署方案：
+### GitHub Pages
 
-1. 在 `astro.config.mjs` 中设置 `site` (例如 `https://<username>.github.io`)。
-2. 如果不是部署到根目录（项目名不是 `<username>.github.io`），还需设置 `base` (例如 `/paperair`)。
-3. 推送代码到 GitHub，工作流 `.github/workflows/deploy.yml` 会自动运行。
-4. 在仓库 **Settings > Pages** 中，将 **Source** 设置为 **GitHub Actions**。
+1. 在 `consts.ts` 中设置 `site` (例如 `https://<username>.github.io`)。
+2. 在仓库 **Settings > Pages** 中，将 **Source** 设置为 **GitHub Actions**。
+3. 推送代码到 `master` 分支。
+
+现在部署应该会自动运行，可能要在 `Actions` 中启用。
+
+### Cloudflare Pages
+
+1. 在仓库 **Settings > Secrets and variables > Actions** 中添加 `CLOUDFLARE_API_TOKEN` 机密（必需）。可能需要添加 `CLOUDFLARE_ACCOUNT_ID`。
+2. 可以通过改变机密 `CLOUDFLARE_PROJECT_NAME` 来指定项目名称，或者让它自动从 `wrangler.toml` 中读取。
+3. 推送代码到 `master` 分支。
+
+现在部署应该会自动运行，可能要在 `Actions` 中启用。
 
 ## 许可证
 
