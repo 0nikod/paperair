@@ -14,63 +14,6 @@
 - **SEO 友好** -- 语义化 HTML 标签、meta 信息、robots.txt 等
 - **响应式布局** -- 适配桌面端与移动端
 
-## 技术栈
-
-| 类别 | 技术 |
-| :--- | :--- |
-| 框架 | [Astro](https://astro.build/) 7 |
-| 样式 | [Tailwind CSS](https://tailwindcss.com/) 4 + [DaisyUI](https://daisyui.com/) 5 |
-| 排版 | [@tailwindcss/typography](https://github.com/tailwindlabs/tailwindcss-typography) |
-| 图标 | [astro-icon](https://github.com/natemoo-re/astro-icon) + [Remix Icon](https://remixicon.com/) |
-| 搜索 | [Pagefind](https://pagefind.app/) |
-| CMS | [Decap CMS](https://decapcms.org/) |
-| 代码质量 | [Biome](https://biomejs.dev/) (Linter + Formatter) |
-| Git Hooks | [Husky](https://typicode.github.io/husky/) + [lint-staged](https://github.com/lint-staged/lint-staged) |
-| CI | GitHub Actions |
-| 包管理 | [pnpm](https://pnpm.io/) |
-| 语言 | TypeScript (strict) |
-
-## 项目结构
-
-```text
-/
-├── public/
-│   ├── admin/            # Decap CMS 配置
-│   ├── favicon.ico
-│   └── favicon.svg
-├── src/
-│   ├── assets/           # 图片等静态资源
-│   ├── components/       # Astro 组件
-│   │   ├── ArticleCard       # 文章卡片
-│   │   ├── MomentTimelineItem # 动态时间线条目
-│   │   ├── MomentsFilter      # 动态归档筛选器
-│   │   ├── Navbar / NavLinks  # 导航栏
-│   │   ├── SearchBar          # 搜索栏
-│   │   ├── ThemeToggle        # 主题切换
-│   │   └── ...
-│   ├── content/          # 内容集合 (Markdown)
-│   │   ├── blog/             # 博客文章
-│   │   └── moments/          # 动态
-│   ├── layouts/          # 页面布局
-│   │   ├── BaseLayout        # 全局基础布局
-│   │   ├── BlogLayout        # 文章详情布局
-│   │   └── MomentsIndexLayout # 动态列表布局
-│   ├── pages/            # 路由页面
-│   │   ├── index.astro       # 首页
-│   │   ├── blog/             # 博客列表与详情
-│   │   ├── moments/          # 动态列表 (按年/月归档)
-│   │   ├── rss.xml.ts        # RSS Feed
-│   │   └── robots.txt.ts     # robots.txt
-│   ├── settings/         # 站点配置 (页脚社交链接等)
-│   ├── styles/           # 全局样式
-│   └── utils/            # 工具函数 (内容查询, Pagefind 封装)
-├── consts.ts             # 全局常量 (站名、导航、时区等)
-├── astro.config.mjs      # Astro 配置
-├── biome.json            # Biome Linter/Formatter 配置
-├── tsconfig.json         # TypeScript 配置 (路径别名)
-└── package.json
-```
-
 ## 快速开始
 
 ### 环境要求
@@ -170,6 +113,63 @@ export const CONTENT_REPO = {
 5. 推送代码到 `master` 分支。
 
 现在部署应该会自动运行，可能要在 `Actions` 中启用。
+
+## 技术栈
+
+| 类别 | 技术 |
+| :--- | :--- |
+| 框架 | [Astro](https://astro.build/) 7 |
+| 样式 | [Tailwind CSS](https://tailwindcss.com/) 4 + [DaisyUI](https://daisyui.com/) 5 |
+| 排版 | [@tailwindcss/typography](https://github.com/tailwindlabs/tailwindcss-typography) |
+| 图标 | [astro-icon](https://github.com/natemoo-re/astro-icon) + [Remix Icon](https://remixicon.com/) |
+| 搜索 | [Pagefind](https://pagefind.app/) |
+| CMS | [Decap CMS](https://decapcms.org/) |
+| 代码质量 | [Biome](https://biomejs.dev/) (Linter + Formatter) |
+| Git Hooks | [Husky](https://typicode.github.io/husky/) + [lint-staged](https://github.com/lint-staged/lint-staged) |
+| CI | GitHub Actions |
+| 包管理 | [pnpm](https://pnpm.io/) |
+| 语言 | TypeScript (strict) |
+
+## 项目结构
+
+```text
+/
+├── public/
+│   ├── admin/            # Decap CMS 配置
+│   ├── favicon.ico
+│   └── favicon.svg
+├── src/
+│   ├── assets/           # 图片等静态资源
+│   ├── components/       # Astro 组件
+│   │   ├── ArticleCard       # 文章卡片
+│   │   ├── MomentTimelineItem # 动态时间线条目
+│   │   ├── MomentsFilter      # 动态归档筛选器
+│   │   ├── Navbar / NavLinks  # 导航栏
+│   │   ├── SearchBar          # 搜索栏
+│   │   ├── ThemeToggle        # 主题切换
+│   │   └── ...
+│   ├── content/          # 内容集合 (Markdown)
+│   │   ├── blog/             # 博客文章
+│   │   └── moments/          # 动态
+│   ├── layouts/          # 页面布局
+│   │   ├── BaseLayout        # 全局基础布局
+│   │   ├── BlogLayout        # 文章详情布局
+│   │   └── MomentsIndexLayout # 动态列表布局
+│   ├── pages/            # 路由页面
+│   │   ├── index.astro       # 首页
+│   │   ├── blog/             # 博客列表与详情
+│   │   ├── moments/          # 动态列表 (按年/月归档)
+│   │   ├── rss.xml.ts        # RSS Feed
+│   │   └── robots.txt.ts     # robots.txt
+│   ├── settings/         # 站点配置 (页脚社交链接等)
+│   ├── styles/           # 全局样式
+│   └── utils/            # 工具函数 (内容查询, Pagefind 封装)
+├── consts.ts             # 全局常量 (站名、导航、时区等)
+├── astro.config.mjs      # Astro 配置
+├── biome.json            # Biome Linter/Formatter 配置
+├── tsconfig.json         # TypeScript 配置 (路径别名)
+└── package.json
+```
 
 ## 许可证
 
