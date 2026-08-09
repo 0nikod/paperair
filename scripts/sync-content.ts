@@ -57,6 +57,17 @@ function validateContentDates() {
   const errors: string[] = [];
   const timezoneSuffixPattern = /(?:Z|[+-]\d{2}:?\d{2})$/i;
 
+  /** 提取简单 YAML 标量，同时保留引号内的 # 并忽略未加引号的行尾注释。 */
+  function parseYamlScalar(source: string): string {
+    const value = source.trim();
+    const quote = value[0];
+    if (quote === '"' || quote === "'") {
+      const end = value.lastIndexOf(quote);
+      return end > 0 ? value.slice(1, end) : value;
+    }
+    return value.replace(/\s+#.*$/, "").trim();
+  }
+
   function visit(directory: string) {
     for (const entry of readdirSync(directory, { withFileTypes: true })) {
       const path = resolve(directory, entry.name);
@@ -66,11 +77,15 @@ function validateContentDates() {
       }
       if (!entry.isFile() || !/\.mdx?$/.test(entry.name)) continue;
 
-      const source = readFileSync(path, "utf-8");
+      const source = readFileSync(path, "utf-8").replace(/^\uFEFF/, "");
       const frontmatter = source.match(
         /^---\s*\r?\n([\s\S]*?)\r?\n---(?:\s*\r?\n|$)/,
       )?.[1];
-      if (!frontmatter) continue;
+      const file = relative(ROOT, path);
+      if (!frontmatter) {
+        errors.push(`${file}: 未找到有效的 YAML frontmatter`);
+        continue;
+      }
 
       for (const match of frontmatter.matchAll(
         /^(pubDate|updatedDate):\s*(.*?)\s*$/gm,
@@ -79,8 +94,7 @@ function validateContentDates() {
         const rawValue = match[2]?.trim();
         if (!field || !rawValue) continue;
 
-        const value = rawValue.replace(/^(["'])(.*)\1$/, "$2");
-        const file = relative(ROOT, path);
+        const value = parseYamlScalar(rawValue);
         if (!timezoneSuffixPattern.test(value)) {
           errors.push(`${file}: ${field} 必须包含 Z 或数字时区偏移`);
           continue;
