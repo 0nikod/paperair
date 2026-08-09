@@ -6,6 +6,7 @@
 import type { CollectionEntry } from "astro:content";
 import { render } from "astro:content";
 import ImageGrid from "@components/ImageGrid.astro";
+import { getDateParts } from "@utils/date";
 import { resolvePath } from "@utils/path";
 import { Icon } from "astro-icon/components";
 
@@ -19,10 +20,7 @@ interface Props {
 const { moment, class: className } = Astro.props;
 const { Content } = await render(moment);
 
-const date = moment.data.pubDate;
-const year = date.getFullYear().toString();
-const month = (date.getMonth() + 1).toString().padStart(2, "0");
-const day = date.getDate().toString().padStart(2, "0");
+const { year, month, day } = getDateParts(moment.data.pubDate);
 
 // A unique URL for this moment
 const momentUrl = resolvePath(

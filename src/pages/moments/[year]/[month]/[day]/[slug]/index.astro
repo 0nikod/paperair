@@ -3,6 +3,7 @@ import { getCollection, render } from "astro:content";
 import ClientDate from "@components/ClientDate.astro";
 import ImageGrid from "@components/ImageGrid.astro";
 import BaseLayout from "@layouts/BaseLayout.astro";
+import { getDateParts } from "@utils/date";
 import { resolvePath } from "@utils/path";
 import { Icon } from "astro-icon/components";
 
@@ -10,10 +11,7 @@ export async function getStaticPaths() {
   const allMoments = await getCollection("moments");
 
   return allMoments.map((moment) => {
-    const date = moment.data.pubDate;
-    const year = date.getFullYear().toString();
-    const month = (date.getMonth() + 1).toString().padStart(2, "0");
-    const day = date.getDate().toString().padStart(2, "0");
+    const { year, month, day } = getDateParts(moment.data.pubDate);
 
     return {
       params: { year, month, day, slug: moment.id.replace(/\.[^/.]+$/, "") },
@@ -26,9 +24,7 @@ const { moment } = Astro.props;
 const { Content } = await render(moment);
 
 const date = moment.data.pubDate;
-const year = date.getFullYear().toString();
-const month = (date.getMonth() + 1).toString().padStart(2, "0");
-const day = date.getDate().toString().padStart(2, "0");
+const { year, month, day } = getDateParts(date);
 
 const title = `动态记录 - ${year}-${month}-${day} - PaperAir`;
 const description = `${(moment.body || "").slice(0, 100)}...`;

@@ -2,13 +2,14 @@
 import ArticleCard from "@components/ArticleCard.astro";
 import BlogIndexLayout from "@layouts/BlogIndexLayout.astro";
 import { getPublishedPosts } from "@utils/content";
+import { getDateParts } from "@utils/date";
 
 const sortedPosts = await getPublishedPosts();
 
 // Group posts by year
 const postsByYear = new Map<string, typeof sortedPosts>();
 sortedPosts.forEach((post) => {
-  const year = post.data.pubDate.getFullYear().toString();
+  const { year } = getDateParts(post.data.pubDate);
   if (!postsByYear.has(year)) {
     postsByYear.set(year, []);
   }
