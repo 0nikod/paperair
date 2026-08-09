@@ -3,6 +3,7 @@ import { getCollection, render } from "astro:content";
 import ClientDate from "@components/ClientDate.astro";
 import ImageGrid from "@components/ImageGrid.astro";
 import BaseLayout from "@layouts/BaseLayout.astro";
+import { resolvePath } from "@utils/path";
 import { Icon } from "astro-icon/components";
 
 export async function getStaticPaths() {
@@ -61,7 +62,10 @@ const description = `${(moment.body || "").slice(0, 100)}...`;
         </div>
       </div>
       <div>
-        <a href="/moments" class="btn btn-ghost btn-sm text-base-content/50">
+        <a
+          href={resolvePath("/moments")}
+          class="btn btn-ghost btn-sm text-base-content/50"
+        >
           <Icon name="ri:arrow-left-line" class="w-4 h-4 mr-1" /> 返回列表
         </a>
       </div>

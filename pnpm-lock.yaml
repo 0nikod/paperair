@@ -35,9 +35,6 @@ importers:
       daisyui:
         specifier: ^5.7.16
         version: 5.7.16
-      pagefind:
-        specifier: ^1.5.2
-        version: 1.5.2
       tailwindcss:
         specifier: ^4.3.3
         version: 4.3.3

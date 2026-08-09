@@ -4,7 +4,7 @@
 
 ## 功能特性
 
-- **博客系统** -- 支持 Markdown 撰写，含标题、描述、封面图、标签、分类、草稿等丰富 Frontmatter 字段
+- **博客系统** -- 支持 Markdown 撰写，含标题、描述、封面图、标签、分类等丰富 Frontmatter 字段
 - **动态 (Moments)** -- 类似微博/说说的短内容发布，支持图片组，按年月归档并以时间线方式展示
 - **全文搜索** -- 集成 [Pagefind](https://pagefind.app/)，实现静态站点客户端搜索
 - **深/浅色主题切换** -- 基于 DaisyUI 主题系统，支持用户手动切换并持久化偏好
@@ -18,7 +18,7 @@
 
 | 类别 | 技术 |
 | :--- | :--- |
-| 框架 | [Astro](https://astro.build/) 5 |
+| 框架 | [Astro](https://astro.build/) 7 |
 | 样式 | [Tailwind CSS](https://tailwindcss.com/) 4 + [DaisyUI](https://daisyui.com/) 5 |
 | 排版 | [@tailwindcss/typography](https://github.com/tailwindlabs/tailwindcss-typography) |
 | 图标 | [astro-icon](https://github.com/natemoo-re/astro-icon) + [Remix Icon](https://remixicon.com/) |
@@ -75,7 +75,7 @@
 
 ### 环境要求
 
-- [Node.js](https://nodejs.org/) >= 20
+- [Node.js](https://nodejs.org/) >= 22.12
 - [pnpm](https://pnpm.io/) >= 10
 
 ### 安装与运行
@@ -166,7 +166,7 @@ export const CONTENT_REPO = {
 1. 在 `consts.ts` 中设置 `SITE_URL`。
 2. 在 `consts.ts` 中设置 `BASE_PATH`。部署到子路径需要设置 `BASE_PATH`，否则设为 `/`。
 3. 在仓库 **Settings > Secrets and variables > Actions** 中添加 `CLOUDFLARE_API_TOKEN` 机密（必需）。可能需要添加 `CLOUDFLARE_ACCOUNT_ID`。
-4. 可以通过改变机密 `CLOUDFLARE_PROJECT_NAME` 来指定项目名称，或者让它自动从 `wrangler.toml` 中读取。
+4. 可以通过改变机密 `CLOUDFLARE_PROJECT_NAME` 来指定项目名称，或者让它自动从 `wrangler.jsonc` 中读取。
 5. 推送代码到 `master` 分支。
 
 现在部署应该会自动运行，可能要在 `Actions` 中启用。
