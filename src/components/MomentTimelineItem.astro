@@ -14,21 +14,14 @@ interface Props {
   moment: CollectionEntry<"moments">;
   /** 自定义样式类 */
   class?: string;
-  /** 是否在日期显示中强调年份 */
-  showYear?: boolean;
   /** 是否为时间轴的最后一项（用于控制垂直延伸线的显示） */
   isLast?: boolean;
 }
 
-const {
-  moment,
-  class: className,
-  showYear = false,
-  isLast = false,
-} = Astro.props;
+const { moment, class: className, isLast = false } = Astro.props;
 
 const date = moment.data.pubDate;
-const { year, month, day } = getDateParts(date);
+const { year, month } = getDateParts(date);
 ---
 
 <article class:list={["flex gap-3 w-full relative group", className]}>
@@ -57,17 +50,12 @@ const { year, month, day } = getDateParts(date);
 
   {/* Content Area */}
   <div class="grow pb-10">
-    {/* Date & Time Row */}
-    <div class="flex items-center gap-2 mb-2 pt-1">
-      <div class="text-sm md:text-base font-bold text-base-content/80">
-        {showYear ? `${year}-${month}-${day}` : `${month}-${day}`}
-      </div>
-      <ClientDate
-        date={date}
-        format="time"
-        class="text-xs text-base-content/50"
-      />
-    </div>
+    {/* 访问者浏览器本地日期与时间；归档筛选仍使用上方的站点时区字段。 */}
+    <ClientDate
+      date={date}
+      format="datetime"
+      class="block mb-2 pt-1 text-sm md:text-base font-bold text-base-content/80"
+    />
 
     {/* Card Content (Extracted to MomentCard) */}
     <MomentCard moment={moment} />

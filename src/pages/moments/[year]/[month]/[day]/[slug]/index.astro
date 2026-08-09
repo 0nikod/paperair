@@ -49,12 +49,9 @@ const description = `${(moment.body || "").slice(0, 100)}...`;
           <span class="text-xs leading-none">{month}</span>
           <span class="text-sm leading-none">{day}</span>
         </div>
-        <div>
-          <ClientDate date={date} format="date" class="font-medium" />
-          <div class="text-sm text-base-content/50 flex items-center gap-1">
-            <Icon name="ri:time-line" class="w-3.5 h-3.5" />
-            <ClientDate date={date} format="time" />
-          </div>
+        <div class="flex items-center gap-1 text-base-content/70">
+          <Icon name="ri:time-line" class="w-3.5 h-3.5" />
+          <ClientDate date={date} format="datetime" class="font-medium" />
         </div>
       </div>
       <div>

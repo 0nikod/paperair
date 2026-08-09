@@ -85,19 +85,12 @@ const allMoments = await getPublishedMoments(3).catch(() => []);
       {
         allMoments.length > 0 ? (
           <div class="flex flex-col gap-8 w-full">
-            {allMoments.map((moment, index) => {
-              const momentYear = moment.data.pubDate.getFullYear().toString();
-              const prevYear = allMoments[index - 1]?.data.pubDate
-                ?.getFullYear()
-                .toString();
-              return (
-                <MomentTimelineItem
-                  moment={moment}
-                  showYear={momentYear !== prevYear}
-                  isLast={index === allMoments.length - 1}
-                />
-              );
-            })}
+            {allMoments.map((moment, index) => (
+              <MomentTimelineItem
+                moment={moment}
+                isLast={index === allMoments.length - 1}
+              />
+            ))}
           </div>
         ) : (
           <div class="text-center py-12 bg-base-200/30 rounded-box border border-base-200 border-dashed">

@@ -10,7 +10,6 @@ export interface MomentArchive {
 
 export interface MomentTimelineEntry {
   moment: MomentEntry;
-  showYear: boolean;
   isLast: boolean;
 }
 
@@ -38,23 +37,16 @@ export function filterMomentsByArchive(
   );
 }
 
-/** 构建带年份分隔与末项标记的时间线数据。 */
+/** 构建按发布日期倒序且带末项标记的时间线数据。 */
 export function buildMomentTimeline(
   moments: readonly MomentEntry[],
 ): MomentTimelineEntry[] {
   const sortedMoments = sortMomentsNewestFirst(moments);
 
-  return sortedMoments.map((moment, index) => {
-    const previousMoment = sortedMoments[index - 1];
-    return {
-      moment,
-      showYear:
-        !previousMoment ||
-        getDateParts(moment.data.pubDate).year !==
-          getDateParts(previousMoment.data.pubDate).year,
-      isLast: index === sortedMoments.length - 1,
-    };
-  });
+  return sortedMoments.map((moment, index) => ({
+    moment,
+    isLast: index === sortedMoments.length - 1,
+  }));
 }
 
 /** 构建按年份、月份倒序排列的动态归档。 */

@@ -30,12 +30,8 @@ const timeline = buildMomentTimeline(moments);
     </div>
   ) : (
     <div class:list={["flex flex-col gap-8 w-full", className]}>
-      {timeline.map(({ moment, showYear, isLast }) => (
-        <MomentTimelineItem
-          moment={moment}
-          showYear={showYear}
-          isLast={isLast}
-        />
+      {timeline.map(({ moment, isLast }) => (
+        <MomentTimelineItem moment={moment} isLast={isLast} />
       ))}
     </div>
   )
