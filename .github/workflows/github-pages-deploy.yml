@@ -13,6 +13,15 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      SITE_URL: ${{ vars.SITE_URL }}
+      BASE_PATH: ${{ vars.BASE_PATH }}
+      CMS_REPO: ${{ github.repository }}
+      CMS_BRANCH: ${{ github.event.repository.default_branch }}
+      CONTENT_REPO_ENABLED: ${{ vars.CONTENT_REPO_ENABLED }}
+      CONTENT_REPO_URL: ${{ vars.CONTENT_REPO_URL }}
+      CONTENT_REPO_NAME: ${{ vars.CONTENT_REPO_NAME }}
+      CONTENT_REPO_BRANCH: ${{ vars.CONTENT_REPO_BRANCH }}
     steps:
       - name: Checkout your repository using git
         uses: actions/checkout@v4

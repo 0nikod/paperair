@@ -1,15 +1,29 @@
 name: Deploy to Cloudflare Pages
 
+# 可选部署模板：默认平台为 GitHub Pages，仅允许手动触发。
 on:
-  push:
-    branches: ["master"]
   workflow_dispatch:
 
 jobs:
   deploy:
-    name: Build and Deploy
+    name: Optional Cloudflare Pages Deploy
     runs-on: ubuntu-latest
+    env:
+      SITE_URL: ${{ vars.SITE_URL }}
+      BASE_PATH: ${{ vars.BASE_PATH }}
+      CMS_REPO: ${{ github.repository }}
+      CMS_BRANCH: ${{ github.event.repository.default_branch }}
+      CONTENT_REPO_ENABLED: ${{ vars.CONTENT_REPO_ENABLED }}
+      CONTENT_REPO_URL: ${{ vars.CONTENT_REPO_URL }}
+      CONTENT_REPO_NAME: ${{ vars.CONTENT_REPO_NAME }}
+      CONTENT_REPO_BRANCH: ${{ vars.CONTENT_REPO_BRANCH }}
     steps:
+      - name: Validate optional deployment configuration
+        shell: bash
+        run: |
+          test -n "$SITE_URL" || { echo "Repository variable SITE_URL is required."; exit 1; }
+          test -n "$BASE_PATH" || { echo "Repository variable BASE_PATH is required (use / for root)."; exit 1; }
+
       - name: Checkout
         uses: actions/checkout@v4
         with:
