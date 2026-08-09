@@ -1,6 +1,12 @@
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { resolve } from "node:path";
+import {
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  writeFileSync,
+} from "node:fs";
+import { relative, resolve } from "node:path";
 import { CONTENT_REPO, SITE_BRANCH, SITE_REPO } from "../config/deployment.ts";
 
 const ROOT = resolve(import.meta.dirname, "..");
@@ -40,6 +46,55 @@ function ensureContentDirs() {
       mkdirSync(dir, { recursive: true });
       console.log(`[sync-content] 已创建空目录: src/content/${name}`);
     }
+  }
+}
+
+/**
+ * 在 YAML loader 转换日期前检查原始 frontmatter。
+ * 这样可以阻止无时区时间先被解析成 Date 后绕过 schema 的字符串校验。
+ */
+function validateContentDates() {
+  const errors: string[] = [];
+  const timezoneSuffixPattern = /(?:Z|[+-]\d{2}:?\d{2})$/i;
+
+  function visit(directory: string) {
+    for (const entry of readdirSync(directory, { withFileTypes: true })) {
+      const path = resolve(directory, entry.name);
+      if (entry.isDirectory()) {
+        visit(path);
+        continue;
+      }
+      if (!entry.isFile() || !/\.mdx?$/.test(entry.name)) continue;
+
+      const source = readFileSync(path, "utf-8");
+      const frontmatter = source.match(
+        /^---\s*\r?\n([\s\S]*?)\r?\n---(?:\s*\r?\n|$)/,
+      )?.[1];
+      if (!frontmatter) continue;
+
+      for (const match of frontmatter.matchAll(
+        /^(pubDate|updatedDate):\s*(.*?)\s*$/gm,
+      )) {
+        const field = match[1];
+        const rawValue = match[2]?.trim();
+        if (!field || !rawValue) continue;
+
+        const value = rawValue.replace(/^(["'])(.*)\1$/, "$2");
+        const file = relative(ROOT, path);
+        if (!timezoneSuffixPattern.test(value)) {
+          errors.push(`${file}: ${field} 必须包含 Z 或数字时区偏移`);
+          continue;
+        }
+        if (Number.isNaN(new Date(value).valueOf())) {
+          errors.push(`${file}: ${field} 不是有效日期`);
+        }
+      }
+    }
+  }
+
+  visit(CONTENT_DIR);
+  if (errors.length > 0) {
+    throw new Error(`内容日期校验失败：\n- ${errors.join("\n- ")}`);
   }
 }
 
@@ -110,6 +165,7 @@ generateCmsConfig();
 
 if (!CONTENT_REPO.enabled) {
   ensureContentDirs();
+  validateContentDates();
   console.log("[sync-content] CONTENT_REPO 未启用，使用本地内容");
   process.exit(0);
 }
@@ -154,4 +210,5 @@ if (isSubmoduleRegistered()) {
 }
 
 ensureContentDirs();
+validateContentDates();
 console.log("[sync-content] 完成");
