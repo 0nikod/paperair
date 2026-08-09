@@ -67,7 +67,7 @@ Decap CMS 配置模板位于 `public/admin/config.template.yml`。每次 `dev` /
 
 项目支持将 `src/content` 拆分到独立 Git 仓库，通过 git submodule 可选引入。
 
-编辑 `consts.ts` 中的 `CONTENT_REPO` 配置：
+编辑 `config/deployment.ts` 中的 `CONTENT_REPO` 默认配置，或通过对应环境变量覆盖：
 
 ```ts
 export const CONTENT_REPO = {
@@ -88,7 +88,7 @@ export const CONTENT_REPO = {
 **启用步骤**：
 
 1. 在 Git 托管平台创建内容仓库，将 `blog/` 和 `moments/` 推送到仓库根目录
-2. 在 `consts.ts` 中填入仓库信息并设置 `enabled: true`
+2. 在 `config/deployment.ts` 中填入仓库信息并设置 `enabled: true`，或配置 `CONTENT_REPO_*` 环境变量
 3. 运行 `pnpm sync-content`，脚本会自动添加 submodule 并生成 CMS 配置
 
 **不启用时**：`src/content` 作为普通目录保留在主仓库中，行为与拆分前完全一致。
@@ -97,8 +97,8 @@ export const CONTENT_REPO = {
 
 ### GitHub Pages
 
-1. 在 `consts.ts` 中设置 `SITE_URL` (例如 `https://<username>.github.io`)。
-2. 在 `consts.ts` 中设置 `BASE_PATH`。部署到子路径需要设置 `BASE_PATH`，否则设为 `/`。
+1. 在 `config/deployment.ts` 中设置 `SITE_URL` 默认值，或配置同名 Repository Variable（例如 `https://<username>.github.io`）。
+2. 在 `config/deployment.ts` 中设置 `BASE_PATH` 默认值，或配置同名 Repository Variable。部署到子路径时使用仓库路径，否则设为 `/`。
 3. 在仓库 **Settings > Pages** 中，将 **Source** 设置为 **GitHub Actions**。
 4. 推送代码到 `master` 分支。
 
@@ -106,8 +106,8 @@ export const CONTENT_REPO = {
 
 ### Cloudflare Pages
 
-1. 在 `consts.ts` 中设置 `SITE_URL`。
-2. 在 `consts.ts` 中设置 `BASE_PATH`。部署到子路径需要设置 `BASE_PATH`，否则设为 `/`。
+1. 配置 Repository Variable `SITE_URL`。
+2. 配置 Repository Variable `BASE_PATH`；部署到域名根路径时设为 `/`。
 3. 在仓库 **Settings > Secrets and variables > Actions** 中添加 `CLOUDFLARE_API_TOKEN` 机密（必需）。可能需要添加 `CLOUDFLARE_ACCOUNT_ID`。
 4. 可以通过改变机密 `CLOUDFLARE_PROJECT_NAME` 来指定项目名称，或者让它自动从 `wrangler.jsonc` 中读取。
 5. 推送代码到 `master` 分支。
