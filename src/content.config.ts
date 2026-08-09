@@ -1,57 +1,44 @@
 import { defineCollection } from "astro:content";
-import { TIMEZONE } from "@consts";
 import { glob } from "astro/loaders";
 import { z } from "astro/zod";
 
-/**
- * 在模块加载时计算一次 TIMEZONE 对应的 UTC 偏移字符串（如 "+08:00"）。
- * 适用于无 DST 时区（如 Asia/Shanghai）。
- */
-function getTimezoneOffset(timezone: string): string {
-  const formatted = new Intl.DateTimeFormat("en-US", {
-    timeZone: timezone,
-    timeZoneName: "shortOffset",
-  }).format(new Date());
-  const match = formatted.match(/GMT([+-]\d{1,2}(?::\d{2})?)/);
-  if (!match?.[1]) return "+00:00";
-  const raw = match[1];
-  const colonIdx = raw.indexOf(":");
-  const h = colonIdx >= 0 ? raw.slice(0, colonIdx) : raw;
-  const m = colonIdx >= 0 ? raw.slice(colonIdx + 1) : "00";
-  const sign = h.startsWith("-") ? "-" : "+";
-  return `${sign}${Math.abs(Number(h)).toString().padStart(2, "0")}:${m.padStart(2, "0")}`;
-}
-
-const TZ_OFFSET = getTimezoneOffset(TIMEZONE);
+/** ISO 日期字符串必须显式包含 UTC 标记或数字时区偏移。 */
+const TIMEZONE_SUFFIX_PATTERN = /(?:Z|[+-]\d{2}:?\d{2})$/i;
 
 /**
- * 将 frontmatter 中的日期值安全解析为 Date。
+ * 将 frontmatter 日期规范化为表示绝对时刻的 Date。
  *
- * 正常路径（CMS 写入，含时区）：
- *   字符串 "2026-02-27T21:00:00+08:00" → 直接 new Date()，精确。
+ * CMS 使用 `picker_utc: false` 按编辑者浏览器本地时区显示和编辑，并通过
+ * `YYYY-MM-DDTHH:mm:ssZ` 保存明确的时区偏移。YAML loader 可能已将该值解析为
+ * Date，此时必须直接保留，不能再按站点 TIMEZONE 二次补偿。
  *
- * 兜底路径（手写 frontmatter，无时区）：
- *   js-yaml 会将 "2026-02-27T21:00:00" 按 UTC 解析为 Date 对象（提前 8 小时）。
- *   此函数取出其 UTC 分量，重新拼接 TZ_OFFSET 来还原意图中的本地时间。
+ * 字符串形式的无时区日期会被拒绝；若 YAML 已将无时区值解析为 Date，则无法再
+ * 识别其来源，因此内容必须统一保存明确偏移。构建期 TIMEZONE 只用于归档、URL
+ * 和静态 HTML fallback，不用于猜测内容时间。
  */
-function parseDateWithTimezone(val: unknown): Date {
-  if (val instanceof Date) {
-    // js-yaml 将无时区字符串按 UTC 自动解析成了 Date，在此纠正。
-    const iso = val.toISOString(); // "2026-02-27T13:00:00.000Z"（错误）
-    return new Date(iso.replace("Z", TZ_OFFSET)); // 还原为本地时间
+function parseAbsoluteDate(value: unknown): Date {
+  if (value instanceof Date) {
+    if (Number.isNaN(value.valueOf())) {
+      throw new RangeError("日期值无效");
+    }
+    return value;
   }
-  const str = String(val);
-  // 已携带时区信息（CMS 标准输出）：直接解析。
-  if (/Z$|[+-]\d{2}:\d{2}$/.test(str)) {
-    return new Date(str);
+
+  const source = String(value).trim();
+  if (!TIMEZONE_SUFFIX_PATTERN.test(source)) {
+    throw new RangeError(
+      `日期必须包含时区，例如 2026-02-27T21:00:00+08:00：${source}`,
+    );
   }
-  // 纯字符串无时区：拼接默认时区。
-  return new Date(`${str}${TZ_OFFSET}`);
+
+  const date = new Date(source);
+  if (Number.isNaN(date.valueOf())) {
+    throw new RangeError(`日期值无效：${source}`);
+  }
+  return date;
 }
 
-const dateField = z
-  .union([z.string(), z.date()])
-  .transform(parseDateWithTimezone);
+const dateField = z.union([z.string(), z.date()]).transform(parseAbsoluteDate);
 
 const blog = defineCollection({
   loader: glob({ pattern: "**/*.{md,mdx}", base: "./src/content/blog" }),

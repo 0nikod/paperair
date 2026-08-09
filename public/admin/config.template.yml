@@ -30,12 +30,16 @@ collections:
           name: "pubDate",
           widget: "datetime",
           format: "YYYY-MM-DDTHH:mm:ssZ",
+          # 按 CMS 编辑者浏览器的本地时区显示和编辑
+          picker_utc: false,
         }
       - {
           label: "更新日期",
           name: "updatedDate",
           widget: "datetime",
           format: "YYYY-MM-DDTHH:mm:ssZ",
+          # 按 CMS 编辑者浏览器的本地时区显示和编辑
+          picker_utc: false,
           required: false,
         }
       - { label: "标签", name: "tags", widget: "list", default: [] }
@@ -58,6 +62,8 @@ collections:
           name: "pubDate",
           widget: "datetime",
           format: "YYYY-MM-DDTHH:mm:ssZ",
+          # 按 CMS 编辑者浏览器的本地时区显示和编辑
+          picker_utc: false,
         }
       - {
           label: "图片列表",

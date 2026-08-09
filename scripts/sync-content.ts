@@ -86,6 +86,18 @@ function generateCmsConfig() {
   template = template.replace("__CONTENT_BRANCH__", cmsBranch);
   template = template.replace("__LOCAL_BACKEND__", (!IS_PRODUCTION).toString());
 
+  const datetimeWidgetCount =
+    template.match(/widget:\s*"datetime"/g)?.length ?? 0;
+  const localPickerCount = template.match(/picker_utc:\s*false/g)?.length ?? 0;
+  if (datetimeWidgetCount === 0 || datetimeWidgetCount !== localPickerCount) {
+    throw new Error(
+      "每个 CMS datetime 字段都必须显式配置 picker_utc: false，以使用编辑者浏览器本地时区",
+    );
+  }
+  if (IS_PRODUCTION && !template.includes("local_backend: false")) {
+    throw new Error("生产 CMS 配置不能启用 local_backend");
+  }
+
   writeFileSync(CMS_OUTPUT, template, "utf-8");
   console.log(
     `[sync-content] 已生成 ${IS_PRODUCTION ? "生产" : "本地"} CMS 配置: public/admin/config.yml`,
