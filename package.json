@@ -8,8 +8,9 @@
   },
   "scripts": {
     "sync-content": "tsx scripts/sync-content.ts",
+    "sync-content:prod": "tsx scripts/sync-content.ts --prod",
     "predev": "pnpm sync-content",
-    "prebuild": "pnpm sync-content",
+    "prebuild": "pnpm sync-content:prod",
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",

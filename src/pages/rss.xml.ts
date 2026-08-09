@@ -1,6 +1,7 @@
 import { getCollection } from "astro:content";
 import rss from "@astrojs/rss";
-import { SITE_DESCRIPTION, SITE_TITLE, SITE_URL } from "@consts";
+import { SITE_URL } from "@config/deployment";
+import { SITE_DESCRIPTION, SITE_TITLE } from "@consts";
 import { resolvePath } from "@utils/path";
 import type { APIContext } from "astro";
 
