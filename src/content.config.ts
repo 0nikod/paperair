@@ -1,6 +1,7 @@
-import { defineCollection, z } from "astro:content";
+import { defineCollection } from "astro:content";
 import { TIMEZONE } from "@consts";
 import { glob } from "astro/loaders";
+import { z } from "astro/zod";
 
 /**
  * 在模块加载时计算一次 TIMEZONE 对应的 UTC 偏移字符串（如 "+08:00"）。

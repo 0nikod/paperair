@@ -17,13 +17,11 @@ export default defineConfig({
 
   integrations: [icon(), pagefind(), sitemap()],
 
-  experimental: {
-    fonts: [
-      {
-        provider: fontProviders.google(),
-        name: "Cascadia Code",
-        cssVariable: "--font-cascadia-code",
-      },
-    ],
-  },
+  fonts: [
+    {
+      provider: fontProviders.google(),
+      name: "Cascadia Code",
+      cssVariable: "--font-cascadia-code",
+    },
+  ],
 });
