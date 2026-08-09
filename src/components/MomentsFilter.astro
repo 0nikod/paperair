@@ -5,6 +5,7 @@
  * 提供导航链接，点击可跳转至对应的年月动态列表页。
  */
 import type { CollectionEntry } from "astro:content";
+import { buildMomentArchives } from "@utils/moments";
 import { resolvePath } from "@utils/path";
 import { Icon } from "astro-icon/components";
 
@@ -21,28 +22,7 @@ interface Props {
 
 const { moments, activeYear, activeMonth, class: className } = Astro.props;
 
-// Group moments by year and month
-const archiveMap = new Map<string, Set<string>>();
-
-moments.forEach((moment) => {
-  const date = moment.data.pubDate;
-  const year = date.getFullYear().toString();
-  // Ensure month is 2 digits
-  const month = (date.getMonth() + 1).toString().padStart(2, "0");
-
-  if (!archiveMap.has(year)) {
-    archiveMap.set(year, new Set());
-  }
-  archiveMap.get(year)?.add(month);
-});
-
-// Convert to sorted array
-const archives = Array.from(archiveMap.entries())
-  .map(([year, monthsSet]) => ({
-    year,
-    months: Array.from(monthsSet).sort((a, b) => b.localeCompare(a)), // Descending months
-  }))
-  .sort((a, b) => b.year.localeCompare(a.year)); // Descending years
+const archives = buildMomentArchives(moments);
 ---
 
 <div class:list={["w-full", className]}>

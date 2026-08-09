@@ -1,4 +1,5 @@
 import { getCollection } from "astro:content";
+import { sortMomentsNewestFirst } from "@utils/moments";
 
 /**
  * 获取已发布的博客文章
@@ -18,10 +19,6 @@ export async function getPublishedPosts(limit?: number) {
  * @param limit 可选，截取前 N 条
  */
 export async function getPublishedMoments(limit?: number) {
-  const moments = await getCollection("moments");
-  const filtered = moments.sort(
-    (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
-  );
-
-  return limit ? filtered.slice(0, limit) : filtered;
+  const moments = sortMomentsNewestFirst(await getCollection("moments"));
+  return limit === undefined ? moments : moments.slice(0, limit);
 }

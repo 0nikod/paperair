@@ -1,18 +1,14 @@
 ---
-import { getCollection } from "astro:content";
 import MomentTimelineItem from "@components/MomentTimelineItem.astro";
 import MomentsIndexLayout from "@layouts/MomentsIndexLayout.astro";
+import { getPublishedMoments } from "@utils/content";
 import { Icon } from "astro-icon/components";
 
 const title = "动态 - PaperAir";
 const description = "这里记录了我的日常与瞬间。";
 
-// Fetch and sort moments
-const allMoments = await getCollection("moments");
-
-const sortedMoments = allMoments.sort(
-  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
-);
+const allMoments = await getPublishedMoments();
+const sortedMoments = allMoments;
 
 // Pre-calculate showYear to avoid complex logic in JSX
 const momentsWithYear = sortedMoments.map((moment, index) => {

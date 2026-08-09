@@ -3,20 +3,13 @@ import type { CollectionEntry } from "astro:content";
 import { getCollection } from "astro:content";
 import MomentTimelineItem from "@components/MomentTimelineItem.astro";
 import MomentsIndexLayout from "@layouts/MomentsIndexLayout.astro";
+import { buildMomentArchives, filterMomentsByArchive } from "@utils/moments";
 import { Icon } from "astro-icon/components";
 
 export async function getStaticPaths() {
   const allMoments = await getCollection("moments");
 
-  const archiveSet = new Set<string>();
-
-  allMoments.forEach((moment) => {
-    const date = moment.data.pubDate;
-    const year = date.getFullYear().toString();
-    archiveSet.add(year);
-  });
-
-  const paths = Array.from(archiveSet).map((year) => ({
+  const paths = buildMomentArchives(allMoments).map(({ year }) => ({
     params: { year },
     props: { allMoments },
   }));
@@ -28,13 +21,9 @@ interface Props {
   allMoments: CollectionEntry<"moments">[];
 }
 
-const { year } = Astro.params;
+const { year = "" } = Astro.params;
 const { allMoments } = Astro.props;
-
-// Filter for this specific year
-const sortedMoments = allMoments
-  .filter((m) => m.data.pubDate.getFullYear().toString() === year)
-  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const sortedMoments = filterMomentsByArchive(allMoments, year);
 
 const title = `${year}年 - 动态归档`;
 const description = `查看${year}年的动态记录。`;
