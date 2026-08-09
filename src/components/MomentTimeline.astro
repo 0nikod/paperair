@@ -1,0 +1,42 @@
+---
+import type { CollectionEntry } from "astro:content";
+import MomentTimelineItem from "@components/MomentTimelineItem.astro";
+import { buildMomentTimeline } from "@utils/moments";
+import { Icon } from "astro-icon/components";
+
+interface Props {
+  moments: readonly CollectionEntry<"moments">[];
+  emptyText?: string;
+  emptyIcon?: string;
+  class?: string;
+}
+
+const {
+  moments,
+  emptyText = "暂无动态",
+  emptyIcon,
+  class: className,
+} = Astro.props;
+const timeline = buildMomentTimeline(moments);
+---
+
+{
+  timeline.length === 0 ? (
+    <div class="text-center py-20 text-base-content/50">
+      {emptyIcon && (
+        <Icon name={emptyIcon} class="w-12 h-12 mx-auto mb-4 opacity-50" />
+      )}
+      <p>{emptyText}</p>
+    </div>
+  ) : (
+    <div class:list={["flex flex-col gap-8 w-full", className]}>
+      {timeline.map(({ moment, showYear, isLast }) => (
+        <MomentTimelineItem
+          moment={moment}
+          showYear={showYear}
+          isLast={isLast}
+        />
+      ))}
+    </div>
+  )
+}

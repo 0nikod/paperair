@@ -1,7 +1,7 @@
 ---
 import type { CollectionEntry } from "astro:content";
 import { getCollection } from "astro:content";
-import MomentTimelineItem from "@components/MomentTimelineItem.astro";
+import MomentTimeline from "@components/MomentTimeline.astro";
 import MomentsIndexLayout from "@layouts/MomentsIndexLayout.astro";
 import { buildMomentArchives, filterMomentsByArchive } from "@utils/moments";
 import { Icon } from "astro-icon/components";
@@ -27,18 +27,6 @@ const sortedMoments = filterMomentsByArchive(allMoments, year);
 
 const title = `${year}年 - 动态归档`;
 const description = `查看${year}年的动态记录。`;
-
-// Pre-calculate showYear to avoid complex logic in JSX
-const momentsWithYear = sortedMoments.map((moment, index) => {
-  const momentYear = moment.data.pubDate.getFullYear().toString();
-  const prevYear = sortedMoments[index - 1]?.data.pubDate
-    .getFullYear()
-    .toString();
-  return {
-    ...moment,
-    showYear: momentYear !== prevYear,
-  };
-});
 ---
 
 <MomentsIndexLayout
@@ -53,21 +41,5 @@ const momentsWithYear = sortedMoments.map((moment, index) => {
     {year}年的动态 ({sortedMoments.length})
   </h1>
 
-  {
-    sortedMoments.length === 0 ? (
-      <div class="text-center py-20 text-base-content/50">
-        <p>该年无动态</p>
-      </div>
-    ) : (
-      <div class="flex flex-col gap-8 w-full">
-        {momentsWithYear.map((moment, index) => (
-          <MomentTimelineItem
-            moment={moment}
-            showYear={moment.showYear}
-            isLast={index === momentsWithYear.length - 1}
-          />
-        ))}
-      </div>
-    )
-  }
+  <MomentTimeline moments={sortedMoments} emptyText="该年无动态" />
 </MomentsIndexLayout>
