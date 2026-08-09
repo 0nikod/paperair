@@ -17,33 +17,33 @@ const allMoments = await getPublishedMoments(3).catch(() => []);
   title="首页 - PaperAir"
   description="分享技术、生活与思考的个人空间"
 >
-  <div class="space-y-16 py-8">
+  <div class="space-y-12 sm:space-y-16 py-6 sm:py-8">
     <!-- 英雄区域 -->
     <section
-      class="relative w-screen max-w-[100vw] left-1/2 -translate-x-1/2 min-h-[460px] md:min-h-[560px] flex flex-col items-center justify-center overflow-hidden mb-12 isolate -mt-8 pt-8 group"
+      class="relative w-screen max-w-[100vw] left-1/2 -translate-x-1/2 min-h-[400px] sm:min-h-[460px] md:min-h-[560px] flex flex-col items-center justify-center overflow-hidden mb-8 sm:mb-12 isolate -mt-6 sm:-mt-8 pt-6 sm:pt-8 px-4 text-center group"
     >
       <!-- 装饰性斜线组, 加入 mask-image 使得中间文字部分线条隐藏并实现柔和边缘扩散 -->
       <HeroLines />
 
       <!-- 内容区 -->
       <h1
-        class="text-4xl md:text-6xl font-extrabold bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent"
+        class="text-3xl sm:text-4xl md:text-6xl font-extrabold leading-tight bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent"
       >
         Welcome to PaperAir
       </h1>
-      <div class="flex justify-center gap-4 pt-8">
-        <a href={resolvePath("blog")} class="btn btn-primary px-8">阅读文章</a>
-        <a href={resolvePath("about")} class="btn btn-ghost px-8">关于我</a>
+      <div class="flex flex-wrap justify-center gap-3 sm:gap-4 pt-8">
+        <a href={resolvePath("blog")} class="btn btn-primary px-6 sm:px-8">阅读文章</a>
+        <a href={resolvePath("about")} class="btn btn-ghost px-6 sm:px-8">关于我</a>
       </div>
     </section>
 
     <!-- 最近文章 -->
     <section>
-      <div class="flex items-center justify-between mb-8">
-        <h2 class="text-2xl font-bold flex items-center gap-2">
+      <div class="flex items-center justify-between gap-3 mb-8">
+        <h2 class="text-xl sm:text-2xl font-bold flex items-center gap-2">
           <span class="text-primary">#</span> 最近文章
         </h2>
-        <a href={resolvePath("blog")} class="btn btn-ghost btn-sm"
+        <a href={resolvePath("blog")} class="btn btn-ghost btn-sm shrink-0"
           >查看全部 &rarr;</a
         >
       </div>
@@ -73,11 +73,11 @@ const allMoments = await getPublishedMoments(3).catch(() => []);
 
     <!-- 最近动态 -->
     <section>
-      <div class="flex items-center justify-between mb-8">
-        <h2 class="text-2xl font-bold flex items-center gap-2">
+      <div class="flex items-center justify-between gap-3 mb-8">
+        <h2 class="text-xl sm:text-2xl font-bold flex items-center gap-2">
           <span class="text-secondary">#</span> 最近动态
         </h2>
-        <a href={resolvePath("moments")} class="btn btn-ghost btn-sm"
+        <a href={resolvePath("moments")} class="btn btn-ghost btn-sm shrink-0"
           >查看全部 &rarr;</a
         >
       </div>

@@ -33,7 +33,7 @@ const momentUrl = resolvePath(
     class="card bg-base-100 border border-base-200 shadow-sm hover:shadow-md transition-shadow"
   >
     <div
-      class="card-body p-4 md:p-6 overflow-hidden relative"
+      class="card-body p-4 sm:p-5 md:p-6 overflow-hidden relative"
       data-content-container
     >
       {/* Content proper */}
@@ -57,7 +57,7 @@ const momentUrl = resolvePath(
     </div>
 
     <div
-      class="px-6 pb-4 pt-1 flex justify-between items-center border-t border-base-200/50 mt-2"
+      class="px-4 sm:px-6 pb-4 pt-1 flex justify-between items-center gap-3 border-t border-base-200/50 mt-2"
     >
       <a
         href={momentUrl}
@@ -72,6 +72,24 @@ const momentUrl = resolvePath(
     </div>
   </div>
 </moment-expandable>
+
+<style>
+  :global(moment-expandable .prose) {
+    overflow-wrap: anywhere;
+  }
+
+  :global(moment-expandable .prose table) {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  :global(moment-expandable .prose pre) {
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-wrap: normal;
+  }
+</style>
 
 <script>
   class MomentExpandable extends HTMLElement {

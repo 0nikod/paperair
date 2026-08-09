@@ -16,12 +16,12 @@ const { title, description, allPosts, activeTag, activeCategory } = Astro.props;
 ---
 
 <BaseLayout title={title} description={description} mainClass="max-w-6xl">
-  <div class="flex flex-col md:flex-row gap-12 py-8 w-full">
+  <div class="flex flex-col lg:flex-row gap-8 lg:gap-12 py-6 sm:py-8 w-full">
     {/* Main Blog Content */}
-    <div class="grow w-full max-w-3xl order-2 md:order-1" data-pagefind-body>
+    <div class="grow min-w-0 w-full max-w-3xl order-2 lg:order-1" data-pagefind-body>
       <span data-pagefind-filter="type:blog" class="hidden"></span>
       <slot name="header">
-        <h1 class="text-3xl font-extrabold mb-10 flex items-center gap-3">
+        <h1 class="text-2xl sm:text-3xl font-extrabold mb-8 sm:mb-10 flex items-center gap-3">
           <Icon name="ri:article-line" class="text-primary w-8 h-8" />
           文章
         </h1>
@@ -31,17 +31,17 @@ const { title, description, allPosts, activeTag, activeCategory } = Astro.props;
     </div>
 
     {/* Sidebar Filter */}
-    <aside class="w-full md:w-64 shrink-0 order-1 md:order-2">
-      <div class="sticky top-24">
+    <aside class="w-full lg:w-64 shrink-0 order-1 lg:order-2">
+      <div class="sticky top-20">
         <BlogFilter
           posts={allPosts}
           activeTag={activeTag}
           activeCategory={activeCategory}
-          class="hidden md:flex"
+          class="hidden lg:flex"
         />
 
         {/* Mobile Dropdown for filters */}
-        <div class="md:hidden dropdown w-full mb-8">
+        <div class="lg:hidden dropdown w-full">
           <div
             tabindex="0"
             role="button"
@@ -55,7 +55,7 @@ const { title, description, allPosts, activeTag, activeCategory } = Astro.props;
           </div>
           <div
             tabindex="0"
-            class="dropdown-content z-1 menu p-4 shadow-xl bg-base-100 rounded-box w-full mt-2 border border-base-200"
+            class="dropdown-content z-10 menu p-4 shadow-xl bg-base-100 rounded-box w-full mt-2 border border-base-200 max-h-[min(70vh,32rem)] overflow-y-auto"
           >
             <BlogFilter
               posts={allPosts}
