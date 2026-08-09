@@ -42,17 +42,9 @@ const description = `${(moment.body || "").slice(0, 100)}...`;
     <header
       class="flex items-center justify-between mb-6 pb-6 border-b border-base-200/50"
     >
-      <div class="flex items-center gap-3">
-        <div
-          class="w-12 h-12 bg-primary/10 text-primary rounded-full flex flex-col items-center justify-center font-bold"
-        >
-          <span class="text-xs leading-none">{month}</span>
-          <span class="text-sm leading-none">{day}</span>
-        </div>
-        <div class="flex items-center gap-1 text-base-content/70">
-          <Icon name="ri:time-line" class="w-3.5 h-3.5" />
-          <ClientDate date={date} format="datetime" class="font-medium" />
-        </div>
+      <div class="flex items-center gap-1 text-base-content/70">
+        <Icon name="ri:time-line" class="w-3.5 h-3.5" />
+        <ClientDate date={date} format="datetime" class="font-medium" />
       </div>
       <div>
         <a
