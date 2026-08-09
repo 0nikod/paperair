@@ -48,6 +48,27 @@ const fallbackText = date.toLocaleString("zh-CN", optionsMap[format]);
 </client-date>
 
 <script>
+  type DateFormat = "date" | "datetime" | "time";
+
+  const formatters: Record<DateFormat, Intl.DateTimeFormat> = {
+    date: new Intl.DateTimeFormat("zh-CN", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    }),
+    time: new Intl.DateTimeFormat("zh-CN", {
+      hour: "2-digit",
+      minute: "2-digit",
+    }),
+    datetime: new Intl.DateTimeFormat("zh-CN", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    }),
+  };
+
   class ClientDateElement extends HTMLElement {
     connectedCallback() {
       const timeEl = this.querySelector("time");
@@ -57,30 +78,19 @@ const fallbackText = date.toLocaleString("zh-CN", optionsMap[format]);
       if (!iso) return;
 
       const date = new Date(iso);
-      const format = this.dataset.format || "date";
+      if (Number.isNaN(date.valueOf())) return;
 
-      const dateOpts: Intl.DateTimeFormatOptions = {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-      };
-      const timeOpts: Intl.DateTimeFormatOptions = {
-        hour: "2-digit",
-        minute: "2-digit",
-      };
+      const requestedFormat = this.dataset.format;
+      const format: DateFormat =
+        requestedFormat === "time" || requestedFormat === "datetime"
+          ? requestedFormat
+          : "date";
 
-      let opts: Intl.DateTimeFormatOptions;
-      if (format === "time") {
-        opts = timeOpts;
-      } else if (format === "datetime") {
-        opts = { ...dateOpts, ...timeOpts };
-      } else {
-        opts = dateOpts;
-      }
-
-      timeEl.textContent = date.toLocaleString("zh-CN", opts);
+      timeEl.textContent = formatters[format].format(date);
     }
   }
 
-  customElements.define("client-date", ClientDateElement);
+  if (!customElements.get("client-date")) {
+    customElements.define("client-date", ClientDateElement);
+  }
 </script>
