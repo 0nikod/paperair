@@ -29,10 +29,10 @@ const currentPath =
     <div class="flex-1 min-w-0">
       <a
         href={resolvePath("/")}
-        class="flex items-center gap-2 hover:opacity-80 transition-opacity focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary rounded-btn p-1"
+        class="flex w-full min-w-0 items-center gap-2 rounded-btn p-1 transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
         aria-label="返回首页"
       >
-        <span class="text-lg font-bold inline-block truncate">
+        <span class="block min-w-0 truncate text-lg font-bold">
           {SITE_TITLE}
         </span>
       </a>
@@ -45,8 +45,8 @@ const currentPath =
         <NavLinks currentPath={currentPath} />
       </ul>
 
-      {/* Search Bar */}
-      <SearchBar class="hidden sm:block" />
+      {/* Search Button / Expanded Search Bar */}
+      <SearchBar />
 
       <ThemeToggle />
 
@@ -64,9 +64,6 @@ const currentPath =
           tabindex="0"
           class="menu menu-sm dropdown-content mt-4 z-1 p-3 shadow-lg bg-base-100 rounded-box w-52 max-w-[calc(100vw-2rem)] border border-base-200 gap-1"
         >
-          <li class="sm:hidden p-1">
-            <SearchBar class="w-full [&_input]:h-11 [&_input]:w-full" />
-          </li>
           <NavLinks currentPath={currentPath} isMobile={true} />
         </ul>
       </div>

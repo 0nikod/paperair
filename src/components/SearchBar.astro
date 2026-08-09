@@ -14,26 +14,46 @@ interface Props {
 const { class: className = "" } = Astro.props;
 ---
 
-<site-search class={`form-control ${className}`}>
-  <div class="relative">
-    <label class="relative flex items-center">
+<site-search class={`form-control min-w-0 ${className}`} data-state="closed">
+  <button
+    type="button"
+    class="search-trigger btn btn-ghost btn-circle btn-sm h-11 w-11 sm:h-9 sm:w-9"
+    aria-label="打开搜索"
+    aria-expanded="false"
+    aria-controls="site-search-input"
+    data-search-trigger
+  >
+    <Icon name="ri:search-line" class="h-5 w-5" />
+  </button>
+
+  <div class="search-field relative" data-search-field>
+    <label class="relative flex min-w-0 items-center">
       <span class="sr-only">搜索</span>
       <Icon
         name="ri:search-line"
-        class="absolute left-3 w-4 h-4 text-base-content/40 pointer-events-none"
+        class="pointer-events-none absolute left-3 h-4 w-4 text-base-content/40"
       />
       <input
+        id="site-search-input"
         type="search"
         placeholder="搜索..."
-        class="input input-sm h-9 bg-base-200/80 border-transparent hover:bg-base-200 rounded-full pl-9 w-32 sm:w-48 lg:w-56 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary focus:bg-base-100 focus:w-72 transition-all text-sm shadow-inner"
+        class="input input-sm h-11 w-36 min-w-0 rounded-full border-transparent bg-base-200/80 pl-9 pr-9 text-sm shadow-inner transition-colors hover:bg-base-200 focus:border-primary focus:bg-base-100 focus:outline-none focus:ring-2 focus:ring-primary/30 sm:h-9 sm:w-48 lg:w-56"
         data-search-input
         autocomplete="off"
       />
+      <button
+        type="button"
+        class="btn btn-ghost btn-circle btn-xs absolute right-1 h-8 w-8"
+        aria-label="关闭搜索"
+        data-search-close
+      >
+        <Icon name="ri:close-line" class="h-4 w-4" />
+      </button>
     </label>
 
     <!-- 搜索结果下拉面板 -->
     <div
-      class="absolute right-0 top-full mt-2 w-md max-w-[calc(100vw-2rem)] bg-base-100 border border-base-300 rounded-box shadow-xl z-50 hidden"
+      class="fixed inset-x-4 top-18 z-50 hidden rounded-box border border-base-300 bg-base-100 shadow-xl sm:absolute sm:inset-x-auto sm:right-0 sm:top-full sm:mt-2 sm:w-md sm:max-w-[calc(100vw-2rem)]"
       data-search-results
     >
       <!-- 头部栏 -->
@@ -86,16 +106,100 @@ const { class: className = "" } = Astro.props;
       </div>
 
       <!-- 结果列表 -->
-      <ul class="menu menu-sm p-2 max-h-128 overflow-y-auto" data-search-list>
+      <ul
+        class="menu menu-sm max-h-[calc(100dvh-9rem)] overflow-y-auto p-2 sm:max-h-128"
+        data-search-list
+      >
       </ul>
     </div>
   </div>
 </site-search>
 
+<style>
+  site-search {
+    display: flex;
+    align-items: center;
+  }
+
+  .search-trigger {
+    overflow: hidden;
+    transition:
+      width 200ms ease,
+      min-width 200ms ease,
+      padding 200ms ease,
+      opacity 150ms ease,
+      transform 200ms ease;
+  }
+
+  .search-field {
+    width: 0;
+    max-width: 0;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateX(0.5rem) scale(0.96);
+    transform-origin: right center;
+    transition:
+      width 220ms ease,
+      max-width 220ms ease,
+      opacity 150ms ease,
+      transform 220ms ease,
+      visibility 0s linear 220ms;
+  }
+
+  site-search[data-state="open"] .search-trigger {
+    width: 0;
+    min-width: 0;
+    padding-inline: 0;
+    border-width: 0;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(0.5rem) scale(0.8);
+  }
+
+  site-search[data-state="open"] .search-field {
+    width: 9rem;
+    max-width: 9rem;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateX(0) scale(1);
+    transition:
+      width 220ms ease,
+      max-width 220ms ease,
+      opacity 180ms 40ms ease,
+      transform 220ms ease,
+      visibility 0s;
+  }
+
+  @media (min-width: 40rem) {
+    site-search[data-state="open"] .search-field {
+      width: 12rem;
+      max-width: 12rem;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    site-search[data-state="open"] .search-field {
+      width: 14rem;
+      max-width: 14rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .search-trigger,
+    .search-field {
+      transition: none;
+    }
+  }
+</style>
+
 <script>
   import { search } from "@utils/pagefinder";
 
   class SiteSearch extends HTMLElement {
+    private trigger: HTMLButtonElement;
+    private closeBtn: HTMLButtonElement;
     private input: HTMLInputElement;
     private panel: HTMLElement;
     private list: HTMLElement;
@@ -107,6 +211,8 @@ const { class: className = "" } = Astro.props;
 
     constructor() {
       super();
+      this.trigger = this.querySelector("[data-search-trigger]")!;
+      this.closeBtn = this.querySelector("[data-search-close]")!;
       this.input = this.querySelector("[data-search-input]")!;
       this.panel = this.querySelector("[data-search-results]")!;
       this.list = this.querySelector("[data-search-list]")!;
@@ -116,9 +222,14 @@ const { class: className = "" } = Astro.props;
 
       // 绑定方法，以便可以由 removeEventListener 卸载
       this.handleDocumentClick = this.handleDocumentClick.bind(this);
+      this.handleKeydown = this.handleKeydown.bind(this);
     }
 
     connectedCallback() {
+      this.trigger.addEventListener("click", () => this.openSearch());
+      this.closeBtn.addEventListener("click", () => this.closeSearch());
+      document.addEventListener("keydown", this.handleKeydown);
+
       // 输入事件 — 带 300ms 防抖
       this.input.addEventListener("input", () => {
         if (this.debounceTimer) clearTimeout(this.debounceTimer);
@@ -170,11 +281,35 @@ const { class: className = "" } = Astro.props;
     disconnectedCallback() {
       // 防止内存泄漏，移除挂载在全局 document 上的事件监听
       document.removeEventListener("click", this.handleDocumentClick);
+      document.removeEventListener("keydown", this.handleKeydown);
+    }
+
+    private openSearch() {
+      this.dataset.state = "open";
+      this.trigger.setAttribute("aria-expanded", "true");
+      this.input.focus();
+
+      if (this.input.value.trim().length > 1) {
+        this.panel.classList.remove("hidden");
+      }
+    }
+
+    private closeSearch(restoreFocus = true) {
+      this.dataset.state = "closed";
+      this.panel.classList.add("hidden");
+      this.trigger.setAttribute("aria-expanded", "false");
+      if (restoreFocus) this.trigger.focus();
     }
 
     private handleDocumentClick(e: MouseEvent) {
-      if (!this.contains(e.target as Node)) {
-        this.panel.classList.add("hidden");
+      if (!this.contains(e.target as Node) && this.dataset.state === "open") {
+        this.closeSearch(false);
+      }
+    }
+
+    private handleKeydown(e: KeyboardEvent) {
+      if (e.key === "Escape" && this.dataset.state === "open") {
+        this.closeSearch();
       }
     }
 
