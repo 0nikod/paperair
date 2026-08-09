@@ -4,6 +4,16 @@
 
 @plugin "@tailwindcss/typography";
 
+@theme {
+  --font-mono: var(--font-cascadia-code), ui-monospace, monospace;
+}
+
+@layer base {
+  :where(code, kbd, samp, pre) {
+    font-family: var(--font-mono);
+  }
+}
+
 @plugin "daisyui/theme" {
   name: "paperair";
   default: true;

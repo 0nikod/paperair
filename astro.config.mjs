@@ -22,6 +22,7 @@ export default defineConfig({
       provider: fontProviders.google(),
       name: "Cascadia Code",
       cssVariable: "--font-cascadia-code",
+      styles: ["normal"],
     },
   ],
 });
